@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daybreak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body>
+<style>
+  :root{
+    --bg:#F7F3EA; --surface:#FFFFFF; --surface-2:#F1ECDF; --ink:#232048; --ink-2:#4A4668;
+    --muted:#77738F; --line:#E4DECC; --accent:#A87F1F; --accent-ink:#8A6716;
+    --accent-soft:#F3E8CC; --gold-bar:#C29A34; --good:#3E7C4F; --good-soft:#E4EFE6;
+    --lavender:#ECE9F6; --track:#E9E3D2; --shadow:0 1px 2px rgba(35,32,72,.05),0 6px 20px rgba(35,32,72,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171430; --surface:#211E42; --surface-2:#2A2650; --ink:#EFECF9; --ink-2:#C9C5E2;
+      --muted:#9B96BC; --line:#332F5C; --accent:#E0B45C; --accent-ink:#E7BE6E;
+      --accent-soft:#3A3155; --gold-bar:#D8AC4E; --good:#8CC79B; --good-soft:#26382E;
+      --lavender:#2B2752; --track:#312C5A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171430; --surface:#211E42; --surface-2:#2A2650; --ink:#EFECF9; --ink-2:#C9C5E2;
+    --muted:#9B96BC; --line:#332F5C; --accent:#E0B45C; --accent-ink:#E7BE6E;
+    --accent-soft:#3A3155; --gold-bar:#D8AC4E; --good:#8CC79B; --good-soft:#26382E;
+    --lavender:#2B2752; --track:#312C5A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px 80px}
+  a{color:var(--accent-ink);text-decoration:none}
+  a:hover{text-decoration:underline}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+  /* header */
+  header{padding:34px 0 8px}
+  .kicker{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink)}
+  h1.greet{font-family:Spectral,Georgia,serif;font-weight:500;font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:6px 0 4px;text-wrap:balance}
+  .datesub{color:var(--muted);font-size:14px}
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .streak-chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--ink-2);box-shadow:var(--shadow);white-space:nowrap}
+  .streak-chip strong{color:var(--ink)}
+
+  /* nav */
+  nav.tabs{display:flex;gap:6px;margin:22px 0 26px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  .tab{background:none;border:none;border-bottom:2px solid transparent;padding:10px 14px 12px;font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+  .tab:hover{color:var(--ink)}
+
+  /* cards */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+  .card h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:19px;margin:0 0 4px}
+  .card h3{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .grid{display:grid;gap:16px}
+  @media(min-width:820px){.grid.two{grid-template-columns:3fr 2fr}.grid.half{grid-template-columns:1fr 1fr}}
+
+  /* meters */
+  .meter{height:10px;background:var(--track);border-radius:999px;overflow:hidden}
+  .meter>i{display:block;height:100%;background:var(--gold-bar);border-radius:999px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .meter.small{height:7px}
+  .pctline{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted);margin-top:7px;font-variant-numeric:tabular-nums}
+  .pctline b{color:var(--ink);font-size:14px}
+
+  /* task list */
+  ul.tasks{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .task{display:flex;gap:12px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;transition:opacity .3s}
+  .task .tick{flex:none;width:24px;height:24px;margin-top:1px;border-radius:8px;border:2px solid var(--muted);background:none;display:grid;place-items:center;font-size:14px;line-height:1;color:transparent}
+  .task .tick:hover{border-color:var(--accent)}
+  .task.done{opacity:.62}
+  .task.done .tick{background:var(--good);border-color:var(--good);color:#fff}
+  .task.done .tname{text-decoration:line-through}
+  .tname{font-weight:600;font-size:14.5px}
+  .tmeta{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .tproj{display:inline-block;font-size:11.5px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:1px 9px;margin-right:6px}
+
+  /* stages */
+  .journey{display:flex;align-items:center;gap:0;margin:12px 0 4px;flex-wrap:wrap;row-gap:8px}
+  .stage{display:flex;align-items:center;gap:0}
+  .stage .dot{width:10px;height:10px;border-radius:50%;background:var(--track);border:2px solid var(--track)}
+  .stage.donept .dot{background:var(--gold-bar);border-color:var(--gold-bar)}
+  .stage.now .dot{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .stage .slabel{font-size:11.5px;color:var(--muted);margin:0 8px 0 6px;white-space:nowrap}
+  .stage.now .slabel{color:var(--ink);font-weight:600}
+  .stage .link{width:18px;height:2px;background:var(--track);margin-right:8px}
+  .stage.donept .link{background:var(--gold-bar)}
+
+  /* project cards */
+  .cat-head{display:flex;align-items:baseline;gap:10px;margin:30px 0 12px}
+  .cat-head h2{font-family:Spectral,Georgia,serif;font-size:21px;font-weight:600;margin:0}
+  .cat-head .cnote{font-size:13px;color:var(--muted)}
+  .pcard{cursor:pointer}
+  .pcard:hover{border-color:var(--accent)}
+  .prow{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+  .ptag{font-size:12.5px;color:var(--muted)}
+  .due-pill{font-size:11.5px;font-weight:600;color:var(--ink-2);background:var(--lavender);border-radius:999px;padding:2px 10px;white-space:nowrap}
+  details.pdetail summary{list-style:none;cursor:pointer}
+  details.pdetail summary::-webkit-details-marker{display:none}
+  .cols{display:grid;gap:14px;margin-top:14px}
+  @media(min-width:640px){.cols{grid-template-columns:1fr 1fr}}
+  .checklist{margin:6px 0 0;padding:0;list-style:none;font-size:13.5px;display:flex;flex-direction:column;gap:5px}
+  .checklist li{padding-left:24px;position:relative;color:var(--ink-2)}
+  .checklist li::before{position:absolute;left:0;top:0}
+  .checklist.donels li::before{content:"✓";color:var(--good);font-weight:700}
+  .checklist.remainls li::before{content:"○";color:var(--muted)}
+  .boardlink{font-size:12.5px;font-weight:600}
+  .cheer{font-size:13px;color:var(--accent-ink);background:var(--accent-soft);border-radius:9px;padding:8px 12px;margin-top:12px}
+
+  /* rhythm */
+  .rblock{display:flex;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
+  .rblock:last-child{border-bottom:none}
+  .rtime{flex:none;width:104px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+  .rname{font-weight:600;font-size:14.5px}
+  .rnote{font-size:12.5px;color:var(--muted)}
+  .rblock.now{background:var(--accent-soft);border-radius:10px;padding:11px 12px;margin:0 -12px;border-bottom:none}
+  .rblock.now .rtime{color:var(--accent-ink);font-weight:600}
+  .nowchip{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--accent-ink);text-transform:uppercase;margin-left:8px}
+  table.week{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  table.week td{padding:9px 8px;border-bottom:1px dashed var(--line);vertical-align:top}
+  table.week td:first-child{font-weight:700;width:52px;color:var(--accent-ink)}
+  table.week tr:last-child td{border-bottom:none}
+
+  /* wins */
+  .wins-grid{display:grid;gap:12px}
+  @media(min-width:640px){.wins-grid{grid-template-columns:1fr 1fr}}
+  .win{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .win .wicon{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-size:19px}
+  .win .wt{font-weight:600;font-size:14px}
+  .win .wd{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .win.locked{opacity:.5}
+  .win.locked .wicon{background:var(--surface-2)}
+
+  /* stats */
+  .tiles{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+  @media(min-width:760px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow)}
+  .tile .num{font-family:Spectral,Georgia,serif;font-size:32px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+  .tile .lab{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .chart{margin-top:8px}
+  .chart svg{width:100%;height:auto;display:block}
+  .chart text{font:11.5px Inter,sans-serif;fill:var(--muted)}
+  .chart .val{font-weight:600;fill:var(--ink)}
+
+  /* toast + confetti */
+  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .35s;z-index:50;max-width:88vw;text-align:center}
+  :root[data-theme="dark"] #toast{background:var(--accent);color:#171430}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+  .view{display:none}
+  .view.active{display:block;animation:fadein .35s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .sun-card{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+  .sun-card p{margin:6px 0 0;color:var(--ink-2)}
+  .footer-note{margin-top:44px;font-size:12.5px;color:var(--muted);text-align:center}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="headrow">
+      <div>
+        <div class="kicker">Daybreak · your command center</div>
+        <h1 class="greet" id="greeting">Good morning, Kevin 👋</h1>
+        <div class="datesub" id="datesub"></div>
+      </div>
+      <div class="streak-chip" id="streakchip"></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-view="today" aria-selected="true">Today</button>
+    <button class="tab" role="tab" data-view="projects" aria-selected="false">Projects</button>
+    <button class="tab" role="tab" data-view="rhythm" aria-selected="false">Rhythm</button>
+    <button class="tab" role="tab" data-view="wins" aria-selected="false">Wins</button>
+    <button class="tab" role="tab" data-view="progress" aria-selected="false">Progress</button>
+  </nav>
+
+  <main>
+    <section class="view active" id="view-today"></section>
+    <section class="view" id="view-projects"></section>
+    <section class="view" id="view-rhythm"></section>
+    <section class="view" id="view-wins"></section>
+    <section class="view" id="view-progress"></section>
+  </main>
+
+  <p class="footer-note">Built from your own Trello boards and calendar — nothing here was re-entered by hand. One good step at a time. 🌱</p>
+</div>
+
+<canvas id="confetti"></canvas>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============ Kevin's real data — pulled from his Trello Life OS, project boards and Google Calendar ============ */
+const BOARDS = {
+  lifeos:  "https://trello.com/b/HEGufcHJ/", isra: "https://trello.com/b/4PMi2bTw/isra-digital-command",
+  loveworld:"https://trello.com/b/OLkgJrYA/loveworld-starlight", regal:"https://trello.com/b/5IMRXFEV/regal-studio",
+  prayer:  "https://trello.com/b/gmOkac2m/prayer-buddy", elson:"https://trello.com/b/XO1KFjdp/elson-website",
+  charity: "https://trello.com/b/gcPPTUEi/charity-website", sammie:"https://trello.com/b/5QzAaERf/sammies-app",
+  helpdesk:"https://trello.com/b/OYB5p12i/helpdesk", lbh:"https://trello.com/b/2sbdC32c/"
+};
+
+const PROJECTS = [
+  { id:"tls", emoji:"🎪", name:"TLS Festival Weekend", cat:"focus",
+    tagline:"Three nights, 28–30 Aug · built on a £0 budget, organic only",
+    stages:["Planning","Promotion","Festival live","Wrap-up"], stageIndex:2,
+    deadline:"2026-08-30", deadlineLabel:"Runs 28–30 Aug",
+    done:["Three nights planned & venues booked","Eventbrite events created for all three nights","Countdown content planned (trail → Dance Crusade pin)","Whole campaign built on £0 — organic only"],
+    remaining:[
+      {id:"tls-landing", t:"Landing page live + all 3 Eventbrite links tested on a phone"},
+      {id:"tls-countdown", t:"Ship the countdown run (batch once, schedule, stop touching)"},
+      {id:"tls-weekend", t:"Run the weekend — be present, enjoy it"},
+      {id:"tls-wrap", t:"Wrap-up: thank-yous + what worked (after Sunday)"}],
+    board:BOARDS.lifeos,
+    cheer:"Everything you prepped for weeks is live right now. Fri: Dance Night 19:00 · Sat: The Money Crusade 16:00 · Sun: The Glory of His Presence 16:00." },
+
+  { id:"isra", emoji:"💷", name:"Isra Digital — Money in the Door", cat:"focus",
+    tagline:"Not “build the company” — revenue that actually arrives",
+    stages:["Set up","First clients","Recurring revenue","Real salary"], stageIndex:1,
+    deadline:null, deadlineLabel:"Every week, one card moves money",
+    done:["Isra Digital Ltd incorporated (28 July) 🎉","LoveWorld pitch deck presented — Pastor Benjamin said yes to monthly","Brand colours + logo swapped into the deck","loveworldstarlight.org improvements shipped","River of Life charity website built & live","Interview pack built (About + Questions + Scorecard)","Business filing system + operating system in place"],
+    remaining:[
+      {id:"isra-price", t:"Name the LoveWorld monthly price — and send it"},
+      {id:"isra-elson-scope", t:"Scope Elson's website (requirements + brief)"},
+      {id:"isra-elson-build", t:"Build + ship Elson's website"},
+      {id:"isra-nicole", t:"Nicole Bleu Aesthetics — GoHighLevel setup"},
+      {id:"isra-sell", t:"Sell the £250 build + £50/mo package to one more client"}],
+    board:BOARDS.isra, links:[["LoveWorld board",BOARDS.loveworld],["Elson board",BOARDS.elson]],
+    cheer:"The retainer is already agreed in principle — naming the price is the only thing between you and recurring income." },
+
+  { id:"ylv", emoji:"🎓", name:"Young Life Vision Workshop", cat:"focus",
+    tagline:"App Development & Digital Innovation — teaching young people in Salford",
+    stages:["Agree scope","Prep","Sessions running","Complete"], stageIndex:1,
+    deadline:"2026-09-28", deadlineLabel:"Sessions start end of Sept",
+    done:["Workshop agreed with Eloho & Nancy","Venue confirmed — 50 Rigby Street, Salford","You earned the room: you're the teacher"],
+    remaining:[
+      {id:"ylv-list", t:"Send Eloho the equipment + software list (unblocks their sourcing)"},
+      {id:"ylv-plan", t:"Write the session plan for the young people"},
+      {id:"ylv-first", t:"Run the first session 🎉"}],
+    board:BOARDS.lifeos,
+    cheer:"This puts you in a room teaching — which feeds everything else you're building." },
+
+  { id:"clip", emoji:"✂️", name:"Clipping Business", cat:"next",
+    tagline:"Takes slot 1 on Mon 31 Aug — the 30-day launch sequence is ready",
+    stages:["Agree","Proof","Sell","Systemise"], stageIndex:0,
+    deadline:"2026-09-30", deadlineLabel:"Day-30 test: one paying client",
+    done:["30-day launch sequence written","Partnership direction decided"],
+    remaining:[
+      {id:"clip-w1", t:"Week 1: one-page partner agreement · name + one-line offer · pick ONE niche"},
+      {id:"clip-w2", t:"Week 2: clip 3 real videos free — that's the portfolio"},
+      {id:"clip-w3", t:"Week 3: 20 outreach messages → first paying client"},
+      {id:"clip-w4", t:"Week 4: delivery SOP + a turnaround promise you can keep"}],
+    board:BOARDS.lifeos,
+    cheer:"Queued on purpose — it gets your full attention the moment the festival wraps." },
+
+  { id:"church", emoji:"⛪", name:"Church Social Media Team", cat:"maintain",
+    tagline:"Your seat: Lead. One seat, not five — build the team, don't be the team",
+    stages:["Pack ready","Meeting held","Team running"], stageIndex:0,
+    deadline:"2026-09-04", deadlineLabel:"Meeting w/c 31 Aug",
+    done:["Roles pack ready — 45-min agenda, five seats, weekly cycle"],
+    remaining:[
+      {id:"church-book", t:"Book the roles meeting for w/c 31 Aug (10-minute job)"},
+      {id:"church-meet", t:"Hold the meeting — fill the five seats"},
+      {id:"church-ceiling", t:"Set your weekly ceiling (hours, days, hard cut-off)"}],
+    board:BOARDS.lifeos, cheer:"The agenda is already written. You just pick a date and send it." },
+
+  { id:"backoffice", emoji:"🏛️", name:"Isra Digital Ltd — Back Office", cat:"maintain",
+    tagline:"Boring, small, and can't be missed — 30 minutes a week is plenty",
+    stages:["Incorporated","Banking","Compliant"], stageIndex:1,
+    deadline:"2026-10-28", deadlineLabel:"CT registration ≈ end of Oct",
+    done:["Company incorporated (28 July)","Mettle application submitted"],
+    remaining:[
+      {id:"bo-ct", t:"Corporation Tax registration (within 3 months of trading)"},
+      {id:"bo-mettle", t:"Chase Mettle if still in review"},
+      {id:"bo-fa", t:"Activate FreeAgent (free via Mettle)"},
+      {id:"bo-wise", t:"Add Wise Business for international payouts"}],
+    board:BOARDS.isra, cheer:"Never zero, never more than 30 minutes. That's the whole rule." },
+
+  { id:"money", emoji:"🏦", name:"Business ≠ Personal Money", cat:"maintain",
+    tagline:"Finite job — finish it once and it stays fixed",
+    stages:["Decided","Separated","Habit running"], stageIndex:0,
+    deadline:"2026-09-30", deadlineLabel:"Done by 30 Sep",
+    done:[],
+    remaining:[
+      {id:"mn-1", t:"Mettle = company money only, ever"},
+      {id:"mn-2", t:"Open a separate personal current account"},
+      {id:"mn-3", t:"Pay yourself: one fixed amount, one fixed date"},
+      {id:"mn-4", t:"Three pots: tax · running costs · profit"},
+      {id:"mn-5", t:"Business subscriptions on the business card only"}],
+    board:BOARDS.lifeos, cheer:"Money arrives → move the tax share out the same day. One habit carries the rest." },
+
+  { id:"regal", emoji:"💇", name:"Regal Studio", cat:"maintain",
+    tagline:"Loc & natural hair brand — one batching session a week",
+    stages:["Built","Launch prep","Live","Growing"], stageIndex:1,
+    deadline:null, deadlineLabel:"Light touch",
+    done:["Site built"],
+    remaining:[
+      {id:"rg-sec", t:"Rotate exposed secrets + change admin password"},
+      {id:"rg-oauth", t:"Verify Google OAuth is in production"},
+      {id:"rg-photos", t:"Add real photos + business info"},
+      {id:"rg-stripe", t:"Decide Stripe: add key or hide buy"},
+      {id:"rg-live", t:"Go live 🎉"}],
+    board:BOARDS.regal, cheer:"Five small steps from live. Any one of them is a good day's touch." },
+
+  { id:"prayer", emoji:"🙏", name:"Prayer Buddy", cat:"maintain",
+    tagline:"Finish the move, then let it rest",
+    stages:["Built","Migration","Deployed"], stageIndex:1,
+    deadline:null, deadlineLabel:"Finish line: loads on Railway",
+    done:["Full app built — web + mobile","Migration off Replit mostly done"],
+    remaining:[
+      {id:"pb-deploy", t:"Deploy on Railway and watch it load — that's the whole finish line"},
+      {id:"pb-angi", t:"Later (when it earns an Active slot): give Angi the screens + update guide"}],
+    board:BOARDS.prayer, cheer:"You're one deploy away from calling this chapter closed." },
+
+  { id:"kaptur", emoji:"🎟️", name:"KAPTUR", cat:"maintain",
+    tagline:"Live at kapturevents.co.uk — keep Rivers of Life running",
+    stages:["Built","Live","Phase 2"], stageIndex:1,
+    deadline:null, deadlineLabel:"Fix-what-breaks only",
+    done:["Live at kapturevents.co.uk","Rivers of Life running on it"],
+    remaining:[{id:"kp-keep", t:"Fix what breaks for that one org — nothing more for now"}],
+    board:BOARDS.lifeos, cheer:"A live product with a real organisation on it. That already counts." },
+
+  { id:"riverweb", emoji:"❤️", name:"River of Life — Charity Website", cat:"maintain",
+    tagline:"Built and live for Golda",
+    stages:["Built","Live","Handed over"], stageIndex:1,
+    deadline:null, deadlineLabel:"10-minute question",
+    done:["Website built","Live on Netlify"],
+    remaining:[{id:"rl-hand", t:"Ask Golda: finished & handed over? If yes — close the board 🎉"}],
+    board:BOARDS.charity, cheer:"This might already be a finished project wearing a to-do's clothes." },
+
+  { id:"lbh", emoji:"🏠", name:"LBH — Let's Build Home", cat:"parked",
+    tagline:"Blocked on one thing: a working payout rail into Zimbabwe",
+    stages:["Concept","Blocked","Buildable","Live"], stageIndex:1,
+    deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
+    done:["Brand concept board built","Marketplace design explored"],
+    remaining:[{id:"lbh-q", t:"One question: run manual batch payouts for the first 10 transactions — yes or no?"}],
+    board:BOARDS.lbh, cheer:"Parked is a decision, not a failure. It costs you nothing until 30 Nov." },
+
+  { id:"devpool", emoji:"👥", name:"Dev Pool", cat:"parked",
+    tagline:"The plan exists — what it needs is a signed client",
+    stages:["Planned","Leads warm","First client"], stageIndex:1,
+    deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
+    done:["Full operating plan: roles, SOPs, risk register"],
+    remaining:[{id:"dp-leads", t:"Reply to the warm leads (allowed) — promote the day a client signs"}],
+    board:BOARDS.lifeos, cheer:"You're not short of plan. Keep the leads warm and let it wait." },
+
+  { id:"sammie", emoji:"📱", name:"Sammie's App", cat:"parked",
+    tagline:"Concept, research and brief all done",
+    stages:["Brief done","Waiting","Build"], stageIndex:1,
+    deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
+    done:["Concept, competitor research & brief complete"],
+    remaining:[{id:"sa-commit", t:"Unpark when Sammy commits money or a launch date"}],
+    board:BOARDS.sammie, cheer:"The thinking is done. It's waiting on a commitment that isn't yours to make." },
+
+  { id:"agency", emoji:"🎬", name:"4-Person Marketing Agency", cat:"parked",
+    tagline:"You, Nathan, Favour, Gianluca — structure written 16 Aug",
+    stages:["Planned","Parked","Decided"], stageIndex:1,
+    deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
+    done:["Structure plan written"],
+    remaining:[{id:"ag-q", t:"Answer first: separate company, or Isra Digital's delivery team?"}],
+    board:BOARDS.lifeos, cheer:"One clear question stands between this and a decision." },
+
+  { id:"northstar", emoji:"⭐", name:"Northstar Ventures", cat:"parked",
+    tagline:"Venture studio, 50/50 with Yemi — agreement drafted",
+    stages:["Framed","Parked","Aligned"], stageIndex:1,
+    deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
+    done:["Strategy framework + founders' agreement produced"],
+    remaining:[{id:"ns-talk", t:"When unparked: one honest conversation with Yemi about who does what"}],
+    board:BOARDS.lifeos, cheer:"The next step is a conversation, not a build. It'll keep." },
+
+  { id:"isrta", emoji:"📈", name:"ISR Trading Academy", cat:"parked",
+    tagline:"Live at isrtradingacademy.com and feature-rich already",
+    stages:["Built","Live","Growing"], stageIndex:1,
+    deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
+    done:["Live and feature-rich","Web app 2.0 improvement set written"],
+    remaining:[{id:"ta-mkt", t:"Unpark only with a marketing plan attached — not a feature list"}],
+    board:BOARDS.lifeos, cheer:"It doesn't need more features. It needs eyes — and that can wait for its slot." }
+];
+
+/* This Week (max 5) — from the Life OS board */
+const THIS_WEEK = [
+  { id:"tls-landing",  proj:"tls",  est:"1–2 h",  why:"Nothing else on the campaign works until the destination works" },
+  { id:"tls-countdown",proj:"tls",  est:"half a day", why:"One batch, then hands off — no mid-week redesigns" },
+  { id:"isra-price",   proj:"isra", est:"45 min", why:"Pastor Benjamin already said yes to monthly — this unlocks recurring income" },
+  { id:"ylv-list",     proj:"ylv",  est:"30 min", why:"They asked for it — sending it now unblocks their computer sourcing" },
+  { id:"church-book",  proj:"church", est:"10 min", why:"Booking is this week; the meeting itself is after the festival" }
+];
+
+/* Weekday rhythm — from Kevin's Google Calendar (recurring events) */
+const RHYTHM_WEEKDAY = [
+  ["07:00","08:00","🕊️ Devotion","Worship, Bible, prayer — before the phone"],
+  ["09:00","09:20","🧭 Morning launch","Open Daybreak, pick today's three"],
+  ["09:20","13:00","📈 ON the business","People and money: outreach, clients, sales"],
+  ["13:00","13:45","🍽️ Lunch & reset","Off the screen properly. Eat. Walk."],
+  ["13:45","18:15","🛠️ IN the business","Hands-on building, editing, shipping"],
+  ["18:15","18:30","🌙 Shutdown","Log today's wins, empty your head, pick tomorrow's one thing"]
+];
+const WEEK_GLANCE = [
+  ["Mon","Heaviest build day — protect it, no calls before 12. Weekly plan at 09:20."],
+  ["Tue","Build + client work."],
+  ["Wed","Outreach day — every week, talk to someone who could pay you."],
+  ["Thu","Build + ship whatever's due."],
+  ["Fri","Morning build · 17:00 Weekly review · then stop."],
+  ["Sat","Content batching in the morning. Afternoon and evening are Angie's."],
+  ["Sun","Church and rest. No laptop — this day is what makes the other six work."]
+];
+
+/* Wins already on the board — real, from Kevin's own history */
+const WINS = [
+  ["🏢","Isra Digital Ltd incorporated","28 July 2026 — it's a real company now"],
+  ["🤝","Monthly retainer agreed in principle","Pastor Benjamin said yes to paying monthly"],
+  ["🎤","Pitch deck presented","Presented to Pastor Benjamin — deck done, delivered"],
+  ["🎨","Brand colours + logo in the deck","LoveWorld Starlight, polished and on-brand"],
+  ["🌐","loveworldstarlight.org shipped","Website improvements finished and live"],
+  ["❤️","Charity website built & live","River of Life, delivered for Golda"],
+  ["🎟️","KAPTUR live","kapturevents.co.uk — Rivers of Life runs on it"],
+  ["📈","ISR Trading Academy live","isrtradingacademy.com, feature-rich"],
+  ["📋","Interview pack built","About + questions + scorecard, ready for hiring"],
+  ["🧭","Life OS up and running","Inbox → Big 3 → weekly review. The system works"],
+  ["🚚","Prayer Buddy nearly moved","Migration off Replit is most of the way done"]
+];
+
+/* Unlockable achievements */
+const UNLOCKS = [
+  ["first",  "🌅","First step in Daybreak","Complete your first task here"],
+  ["three",  "✨","A full day","3 tasks in one day"],
+  ["five",   "🖐️","Five and counting","5 tasks completed in total"],
+  ["ten",    "🔟","Double digits","10 tasks completed in total"],
+  ["streak3","🔥","Three days in a row","Show up three working days running"],
+  ["projdone","🏁","A project over the line","Every step of a project complete"]
+];
+
+const CHEERS = [
+  "✨ Nice work!","That's another piece in place.","Look at you go. 🌱","One step closer.",
+  "Momentum looks good on you.","That was on the list — and now it isn't. 💛","Quietly getting it done."
+];
+
+/* ============ state ============ */
+const KEY="daybreak-v1";
+let S={done:{},history:{},unlocked:{}};
+try{ const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const NOW=new Date();
+const dayKey=d=>d.toISOString().slice(0,10);
+const TODAY=dayKey(NOW);
+const DOW=NOW.getDay(); // 0=Sun
+const FEST_ON = TODAY>="2026-08-28" && TODAY<="2026-08-30";
+
+function findTask(id){ for(const p of PROJECTS){ const r=p.remaining.find(x=>x.id===id); if(r) return {p,r}; } return null; }
+function projProgress(p){
+  const doneCount=p.done.length + p.remaining.filter(r=>S.done[r.id]).length;
+  const total=p.done.length + p.remaining.length;
+  return total? Math.round(100*doneCount/total) : 0;
+}
+function totalDone(){ return Object.keys(S.done).length; }
+
+/* ============ header ============ */
+function renderHeader(){
+  const h=NOW.getHours();
+  const g=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  $("#greeting").textContent=`${g}, Kevin 👋`;
+  $("#datesub").textContent=NOW.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const days=Object.keys(S.history).filter(k=>S.history[k]>0).length;
+  const t=totalDone();
+  $("#streakchip").innerHTML = t
+    ? `<strong>${t}</strong> task${t===1?"":"s"} done · <strong>${days}</strong> active day${days===1?"":"s"} 🌱`
+    : `Fresh page. Let's make today count 🌱`;
+}
+
+/* ============ today ============ */
+function renderToday(){
+  const v=$("#view-today");
+  if(DOW===0){
+    v.innerHTML=`<div class="sun-card">
+      <h2 style="font-family:Spectral,Georgia,serif;margin:0;font-size:22px">It's Sunday. 🌿</h2>
+      <p>Church and rest — no laptop today. Sunday off isn't a reward for finishing; it's the thing that makes the other six days work.</p>
+      <p style="margin-top:10px">Everything will be right here tomorrow morning. Enjoy the day.</p>
+    </div>`;
+    return;
+  }
+  const focus = FEST_ON ? PROJECTS.find(p=>p.id==="tls")
+    : PROJECTS.filter(p=>p.cat==="focus").sort((a,b)=>(a.deadline||"9999")<(b.deadline||"9999")?-1:1)[0];
+  const fpct=projProgress(focus);
+
+  const open=THIS_WEEK.filter(t=>!S.done[t.id]);
+  const pick=open.slice(0,3);
+  const doneToday=S.history[TODAY]||0;
+  const goal=Math.max(pick.length, Math.min(3,doneToday||pick.length||1));
+  const satNote = DOW===6 ? `<div class="cheer" style="margin-top:0;margin-bottom:14px">Saturday shape: content batching this morning — the afternoon and evening are Angie's. 💛</div>`:"";
+
+  v.innerHTML = `
+    ${satNote}
+    <div class="grid two">
+      <div class="card">
+        <h3>Today's focus</h3>
+        <h2>${focus.emoji} ${esc(focus.name)}</h2>
+        <div class="ptag">${esc(focus.tagline)}</div>
+        ${journeyHTML(focus)}
+        <div class="meter" style="margin-top:10px"><i style="width:${fpct}%"></i></div>
+        <div class="pctline"><span><b>${fpct}%</b> there</span><span>${esc(focus.deadlineLabel||"")}</span></div>
+        <div class="cheer">${esc(focus.cheer)}</div>
+      </div>
+      <div class="card">
+        <h3>Today's progress</h3>
+        <div style="font-family:Spectral,Georgia,serif;font-size:34px;font-weight:600;font-variant-numeric:tabular-nums">${doneToday} <span style="font-size:18px;color:var(--muted)">/ ${goal} task${goal===1?"":"s"}</span></div>
+        <div class="meter" style="margin-top:10px"><i style="width:${goal?Math.min(100,Math.round(100*doneToday/goal)):0}%"></i></div>
+        <div class="pctline"><span>${doneToday>=goal&&goal>0?"That's a full day. Anything more is a bonus. ✨":doneToday>0?"You're already moving. Keep going gently.":"Small steps count. Pick one below."}</span></div>
+        <h3 style="margin-top:18px">Your working day</h3>
+        <div style="font-size:13.5px;color:var(--ink-2)">${DOW===6?"Morning only — content batching":"09:00 – 18:30 · mornings for people & money, afternoons for building"}</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>From this week's five</h3>
+      ${pick.length?`<ul class="tasks">${pick.map(taskHTML).join("")}</ul>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:10px">Three is enough for a good day. The rest will wait patiently.</div>`
+      :`<div class="cheer">All five of this week's tasks are done. That's the whole list — enjoy the space you made. 🎉</div>`}
+    </div>
+    ${open.length>3?`<div class="card" style="margin-top:16px"><h3>Waiting quietly (no rush)</h3><ul class="tasks">${open.slice(3).map(taskHTML).join("")}</ul></div>`:""}`;
+  bindTicks(v);
+}
+
+function taskHTML(t){
+  const f=findTask(t.id); if(!f) return "";
+  const done=!!S.done[t.id];
+  return `<li class="task ${done?"done":""}">
+    <button class="tick" data-task="${t.id}" aria-pressed="${done}" aria-label="${done?"Completed":"Mark complete"}: ${esc(f.r.t)}">✓</button>
+    <div><div class="tname">${esc(f.r.t)}</div>
+    <div class="tmeta"><span class="tproj">${f.p.emoji} ${esc(f.p.name.split("—")[0].trim())}</span>≈ ${t.est}${t.why?` · ${esc(t.why)}`:""}</div></div></li>`;
+}
+
+function bindTicks(root){
+  root.querySelectorAll(".tick").forEach(b=>b.addEventListener("click",()=>toggleTask(b.dataset.task)));
+}
+
+function toggleTask(id){
+  const was=!!S.done[id];
+  if(was){ delete S.done[id]; S.history[TODAY]=Math.max(0,(S.history[TODAY]||0)-1); }
+  else{
+    S.done[id]=TODAY; S.history[TODAY]=(S.history[TODAY]||0)+1;
+    celebrate(id);
+  }
+  save(); renderAll();
+}
+
+function celebrate(id){
+  const f=findTask(id);
+  const pct=f?projProgress(f.p):0;
+  const msgs=[CHEERS[Math.floor(Math.random()*CHEERS.length)]];
+  if(f) msgs.push(`${f.p.emoji} ${f.p.name.split("—")[0].trim()} is now ${pct}% along.`);
+  const dt=(S.history[TODAY]||0);
+  if(dt===3) msgs.push("Three today — that's a full day. 🌟");
+  toast(msgs.join("  "));
+  confetti();
+  checkUnlocks(f);
+}
+
+function checkUnlocks(f){
+  const t=totalDone(); const dt=S.history[TODAY]||0;
+  const days=Object.keys(S.history).filter(k=>S.history[k]>0).sort();
+  let streak=1;
+  for(let i=days.length-1;i>0;i--){
+    const a=new Date(days[i]), b=new Date(days[i-1]);
+    if((a-b)/864e5<=1.5) streak++; else break;
+  }
+  const won=[];
+  const un=(k,c)=>{ if(c&&!S.unlocked[k]){S.unlocked[k]=TODAY;won.push(k);} };
+  un("first",t>=1); un("three",dt>=3); un("five",t>=5); un("ten",t>=10); un("streak3",streak>=3&&days.length>=3);
+  un("projdone", f && projProgress(f.p)===100);
+  if(won.length){ const u=UNLOCKS.find(x=>x[0]===won[0]); setTimeout(()=>toast(`🏆 Achievement: ${u[2]}!`),1600); }
+  save();
+}
+
+/* ============ projects ============ */
+function journeyHTML(p){
+  return `<div class="journey">${p.stages.map((s,i)=>{
+    const cls=i<p.stageIndex?"donept":i===p.stageIndex?"now":"";
+    return `<span class="stage ${cls}">${i?'<span class="link"></span>':""}<span class="dot"></span><span class="slabel">${esc(s)}</span></span>`;
+  }).join("")}</div>`;
+}
+
+function projCardHTML(p){
+  const pct=projProgress(p);
+  const doneList=[...p.done, ...p.remaining.filter(r=>S.done[r.id]).map(r=>r.t)];
+  const remainList=p.remaining.filter(r=>!S.done[r.id]).map(r=>r.t);
+  return `<details class="card pcard pdetail" id="proj-${p.id}">
+    <summary>
+      <div class="prow"><h2 style="margin:0">${p.emoji} ${esc(p.name)}</h2>
+      ${p.deadlineLabel?`<span class="due-pill">${esc(p.deadlineLabel)}</span>`:""}</div>
+      <div class="ptag" style="margin-top:2px">${esc(p.tagline)}</div>
+      ${journeyHTML(p)}
+      <div class="meter small" style="margin-top:8px"><i style="width:${pct}%"></i></div>
+      <div class="pctline"><span><b>${pct}%</b> complete</span><span>${remainList.length?`${remainList.length} step${remainList.length===1?"":"s"} to go`:"complete 🎉"}</span></div>
+    </summary>
+    <div class="cols">
+      <div><h3 style="color:var(--good)">What's finished</h3>
+        ${doneList.length?`<ul class="checklist donels">${doneList.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:`<div style="font-size:13px;color:var(--muted)">The first step is still ahead — that's fine.</div>`}</div>
+      <div><h3>What remains</h3>
+        ${remainList.length?`<ul class="checklist remainls">${remainList.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:`<div style="font-size:13px;color:var(--muted)">Nothing. This one's done. 🎉</div>`}</div>
+    </div>
+    <div class="cheer">${esc(p.cheer)}</div>
+    <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap">
+      <a class="boardlink" href="${p.board}" target="_blank" rel="noopener">Open Trello board ↗</a>
+      ${(p.links||[]).map(l=>`<a class="boardlink" href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])} ↗</a>`).join("")}
+    </div>
+  </details>`;
+}
+
+function renderProjects(){
+  const v=$("#view-projects");
+  const cats=[
+    ["focus","🔥 Current focus","Your Big 3 — where the energy goes"],
+    ["next","📌 Next up","Queued on purpose — not a fourth active project"],
+    ["maintain","🌱 Maintain","Light touch: keep alive, don't grow (≈1 hour a week each)"],
+    ["parked","🧊 Later — parked on purpose","Parked isn't failed. Six ideas resting here is what lets three move. Revisit 30 Nov"]
+  ];
+  v.innerHTML=cats.map(([cat,title,note])=>{
+    const list=PROJECTS.filter(p=>p.cat===cat);
+    return `<div class="cat-head"><h2>${title}</h2><span class="cnote">${note}</span></div>
+      <div class="grid">${list.map(projCardHTML).join("")}</div>`;
+  }).join("");
+}
+
+/* ============ rhythm ============ */
+function renderRhythm(){
+  const v=$("#view-rhythm");
+  const mins=NOW.getHours()*60+NOW.getMinutes();
+  const isWd=DOW>=1&&DOW<=5;
+  const toMin=s=>+s.slice(0,2)*60 + +s.slice(3,5);
+  let blocks=[...RHYTHM_WEEKDAY];
+  if(DOW===1) blocks.splice(2,0,["09:20","09:45","🗓️ Weekly plan","Set the week's five — five, not six"]);
+  if(DOW===5) blocks.push(["17:00","18:00","🔎 Weekly review","Read Done first — you did more than you think"]);
+  v.innerHTML=`
+    <div class="grid two">
+      <div class="card">
+        <h3>${isWd?"Today's rhythm":"The weekday rhythm (Mon–Fri)"}</h3>
+        ${blocks.map(b=>{
+          const now=isWd&&mins>=toMin(b[0])&&mins<toMin(b[1]);
+          return `<div class="rblock ${now?"now":""}"><div class="rtime">${b[0]} – ${b[1]}</div>
+            <div><div class="rname">${b[2]}${now?'<span class="nowchip">now</span>':""}</div>
+            <div class="rnote">${esc(b[3])}</div></div></div>`;
+        }).join("")}
+        <div class="cheer">Mornings are for people and money. Afternoons are for building — and the code doesn't get to eat the morning, however tempting.</div>
+      </div>
+      <div class="card">
+        <h3>The week at a glance</h3>
+        <table class="week">${WEEK_GLANCE.map(w=>`<tr><td>${w[0]}</td><td>${esc(w[1])}</td></tr>`).join("")}</table>
+        <div class="cheer" style="margin-top:14px">⭐ Friday 17:00 — the weekly review. If you keep only one habit, keep this one.</div>
+      </div>
+    </div>`;
+}
+
+/* ============ wins ============ */
+function renderWins(){
+  const v=$("#view-wins");
+  const unlockedHTML=UNLOCKS.map(u=>{
+    const got=!!S.unlocked[u[0]];
+    return `<div class="win ${got?"":"locked"}"><div class="wicon">${got?u[1]:"🔒"}</div>
+      <div><div class="wt">${esc(u[2])}</div><div class="wd">${got?"Unlocked "+S.unlocked[u[0]]:esc(u[3])}</div></div></div>`;
+  }).join("");
+  v.innerHTML=`
+    <div class="card" style="margin-bottom:18px">
+      <h2>Already on the wall 🏆</h2>
+      <div class="ptag">You move fast and forget what you've shipped — this list is the correction. Read it whenever a good month feels like a bad one.</div>
+    </div>
+    <div class="wins-grid">${WINS.map(w=>`<div class="win"><div class="wicon">${w[0]}</div>
+      <div><div class="wt">${esc(w[1])}</div><div class="wd">${esc(w[2])}</div></div></div>`).join("")}</div>
+    <div class="cat-head"><h2>Unlockable</h2><span class="cnote">Earned as you use Daybreak</span></div>
+    <div class="wins-grid">${unlockedHTML}</div>`;
+}
+
+/* ============ progress ============ */
+function renderProgress(){
+  const v=$("#view-progress");
+  const inMotion=PROJECTS.filter(p=>p.cat==="focus"||p.cat==="next").length;
+  const parked=PROJECTS.filter(p=>p.cat==="parked").length;
+  const days=Object.keys(S.history).filter(k=>S.history[k]>0).length;
+
+  // this week's Mon–Sun
+  const monday=new Date(NOW); monday.setDate(NOW.getDate()-((DOW+6)%7));
+  const labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const vals=labels.map((_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); return S.history[dayKey(d)]||0; });
+  const max=Math.max(3,...vals);
+  const W=560,H=180,pad=26,bw=Math.floor((W-pad*2)/7*0.52),step=(W-pad*2)/7;
+  const bars=vals.map((n,i)=>{
+    const h=n?Math.max(6,Math.round((H-58)*n/max)):0;
+    const x=pad+step*i+(step-bw)/2, y=H-34-h;
+    return `${n?`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="4" fill="var(--gold-bar)"></rect>
+      <text class="val" x="${x+bw/2}" y="${y-7}" text-anchor="middle">${n}</text>`:""}
+      <text x="${x+bw/2}" y="${H-14}" text-anchor="middle">${labels[i]}</text>`;
+  }).join("");
+  v.innerHTML=`
+    <div class="tiles">
+      <div class="tile"><div class="num">${totalDone()}</div><div class="lab">tasks completed in Daybreak</div></div>
+      <div class="tile"><div class="num">${WINS.length+Object.keys(S.unlocked).length}</div><div class="lab">wins on the wall</div></div>
+      <div class="tile"><div class="num">${inMotion}</div><div class="lab">projects in motion (by design)</div></div>
+      <div class="tile"><div class="num">${parked}</div><div class="lab">parked on purpose — costing you nothing</div></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>This week</h2>
+      <div class="ptag">Tasks completed each day — every bar is a day you showed up.</div>
+      <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tasks completed per day this week">
+        <line x1="${pad}" y1="${H-34}" x2="${W-pad}" y2="${H-34}" stroke="var(--line)"></line>${bars}</svg></div>
+      ${vals.every(n=>!n)?`<div class="cheer">The chart starts drawing itself the moment you tick your first task. No pressure — just a pencil waiting. ✏️</div>`
+        :`<div class="cheer">${vals.reduce((a,b)=>a+b,0)} task${vals.reduce((a,b)=>a+b,0)===1?"":"s"} this week. Progress you can point at.</div>`}
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Where every project stands</h2>
+      ${PROJECTS.filter(p=>p.cat!=="parked").map(p=>{const pct=projProgress(p);
+        return `<div style="margin-top:14px"><div class="pctline" style="margin:0 0 5px"><span><b style="font-size:13.5px">${p.emoji} ${esc(p.name)}</b></span><span>${pct}%</span></div>
+        <div class="meter small"><i style="width:${pct}%"></i></div></div>`;}).join("")}
+      <div class="cheer">Percentages only ever move one way here: forward.</div>
+    </div>`;
+}
+
+/* ============ nav / toast / confetti ============ */
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  $("#view-"+t.dataset.view).classList.add("active");
+}));
+
+let toastTimer;
+function toast(msg){ const el=$("#toast"); el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3200); }
+
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c=$("#confetti"),x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  const cols=["#C29A34","#E0B45C","#3E7C4F","#8B84C9","#D96C4F"];
+  const ps=Array.from({length:70},()=>({x:innerWidth/2+(Math.random()-.5)*160,y:innerHeight*0.62,
+    vx:(Math.random()-.5)*9,vy:-5-Math.random()*7,r:3+Math.random()*4,c:cols[Math.random()*cols.length|0],a:1,rot:Math.random()*6}));
+  let n=0;
+  (function tick(){ x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.28;p.a-=0.012;p.rot+=0.1;
+      if(p.a>0){x.save();x.globalAlpha=p.a;x.translate(p.x,p.y);x.rotate(p.rot);x.fillStyle=p.c;x.fillRect(-p.r,-p.r/2,p.r*2,p.r);x.restore();}});
+    if(++n<110) requestAnimationFrame(tick); else x.clearRect(0,0,c.width,c.height);
+  })();
+}
+
+function renderAll(){ renderHeader(); renderToday(); renderProjects(); renderRhythm(); renderWins(); renderProgress(); }
+renderAll();
+</script>
+
+</body>
+</html>

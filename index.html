@@ -5,197 +5,286 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Daybreak</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 </head>
 <body>
 <style>
   :root{
-    --bg:#F7F3EA; --surface:#FFFFFF; --surface-2:#F1ECDF; --ink:#232048; --ink-2:#4A4668;
-    --muted:#77738F; --line:#E4DECC; --accent:#A87F1F; --accent-ink:#8A6716;
-    --accent-soft:#F3E8CC; --gold-bar:#C29A34; --good:#3E7C4F; --good-soft:#E4EFE6;
-    --lavender:#ECE9F6; --track:#E9E3D2; --shadow:0 1px 2px rgba(35,32,72,.05),0 6px 20px rgba(35,32,72,.06);
+    --bg:#F5F6F8; --card:#FFFFFF; --ink:#111827; --ink-2:#374151; --muted:#6B7280; --line:#E5E7EB;
+    --green:#16A34A; --green-deep:#15803D; --green-soft:#E8F6EE; --green-tint:#F0FAF4;
+    --blue:#2563EB; --blue-soft:#EAF1FE; --purple:#8B5CF6; --purple-soft:#F3EFFE;
+    --orange:#F59E0B; --orange-soft:#FEF3E2; --track:#E9ECEF;
+    --shadow:0 1px 2px rgba(17,24,39,.04),0 8px 24px rgba(17,24,39,.06);
+    --nav-bg:#FFFFFF;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#171430; --surface:#211E42; --surface-2:#2A2650; --ink:#EFECF9; --ink-2:#C9C5E2;
-      --muted:#9B96BC; --line:#332F5C; --accent:#E0B45C; --accent-ink:#E7BE6E;
-      --accent-soft:#3A3155; --gold-bar:#D8AC4E; --good:#8CC79B; --good-soft:#26382E;
-      --lavender:#2B2752; --track:#312C5A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+      --bg:#0E1113; --card:#181C1F; --ink:#F3F4F6; --ink-2:#D1D5DB; --muted:#9CA3AF; --line:#2A2F34;
+      --green:#34C97A; --green-deep:#4ADE80; --green-soft:#173425; --green-tint:#14251C;
+      --blue:#60A5FA; --blue-soft:#1B2A44; --purple:#A78BFA; --purple-soft:#2A2344;
+      --orange:#FBBF24; --orange-soft:#3A2C12; --track:#2A2F34;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+      --nav-bg:#15181B;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#171430; --surface:#211E42; --surface-2:#2A2650; --ink:#EFECF9; --ink-2:#C9C5E2;
-    --muted:#9B96BC; --line:#332F5C; --accent:#E0B45C; --accent-ink:#E7BE6E;
-    --accent-soft:#3A3155; --gold-bar:#D8AC4E; --good:#8CC79B; --good-soft:#26382E;
-    --lavender:#2B2752; --track:#312C5A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    --bg:#0E1113; --card:#181C1F; --ink:#F3F4F6; --ink-2:#D1D5DB; --muted:#9CA3AF; --line:#2A2F34;
+    --green:#34C97A; --green-deep:#4ADE80; --green-soft:#173425; --green-tint:#14251C;
+    --blue:#60A5FA; --blue-soft:#1B2A44; --purple:#A78BFA; --purple-soft:#2A2344;
+    --orange:#FBBF24; --orange-soft:#3A2C12; --track:#2A2F34;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    --nav-bg:#15181B;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1060px;margin:0 auto;padding:0 20px 80px}
-  a{color:var(--accent-ink);text-decoration:none}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .app{max-width:560px;margin:0 auto;padding:14px 16px 104px}
+  a{color:var(--blue);text-decoration:none;font-weight:600}
   a:hover{text-decoration:underline}
-  button{font:inherit;color:inherit;cursor:pointer}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;padding:0}
+  :focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:8px}
 
-  /* header */
-  header{padding:34px 0 8px}
-  .kicker{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink)}
-  h1.greet{font-family:Spectral,Georgia,serif;font-weight:500;font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:6px 0 4px;text-wrap:balance}
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 0 14px}
+  .icbtn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;position:relative;color:var(--ink)}
+  .icbtn:hover{background:var(--card)}
+  .icbtn svg{display:block}
+  .bell-dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#EF4444;border:2px solid var(--bg)}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--green);color:#fff;font-weight:700;display:grid;place-items:center;font-size:16px}
+  .topbar .right{display:flex;align-items:center;gap:6px}
+
+  /* greeting */
+  .greetrow{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+  h1.greet{font-size:clamp(24px,6vw,30px);font-weight:800;letter-spacing:-.02em;margin:0 0 4px;line-height:1.15}
   .datesub{color:var(--muted);font-size:14px}
-  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
-  .streak-chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--ink-2);box-shadow:var(--shadow);white-space:nowrap}
-  .streak-chip strong{color:var(--ink)}
-
-  /* nav */
-  nav.tabs{display:flex;gap:6px;margin:22px 0 26px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
-  nav.tabs::-webkit-scrollbar{display:none}
-  .tab{background:none;border:none;border-bottom:2px solid transparent;padding:10px 14px 12px;font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap}
-  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
-  .tab:hover{color:var(--ink)}
+  .tagline{font-size:14px;color:var(--ink-2);margin-top:10px}
+  .streakcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px;box-shadow:var(--shadow);text-align:center;min-width:132px}
+  .streakcard .slab{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+  .streakcard .snum{font-size:26px;font-weight:800;line-height:1.2}
+  .streakcard .snum small{font-size:13px;font-weight:600;color:var(--muted)}
+  .streakcard .ssub{font-size:12px;color:var(--ink-2);margin-top:4px}
 
   /* cards */
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
-  .card h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:19px;margin:0 0 4px}
-  .card h3{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-  .grid{display:grid;gap:16px}
-  @media(min-width:820px){.grid.two{grid-template-columns:3fr 2fr}.grid.half{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .cardhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+  .cardhead .eyebrow{color:var(--ink-2)}
+  .seelink{font-size:13px}
 
-  /* meters */
-  .meter{height:10px;background:var(--track);border-radius:999px;overflow:hidden}
-  .meter>i{display:block;height:100%;background:var(--gold-bar);border-radius:999px;transition:width .6s cubic-bezier(.22,1,.36,1)}
-  .meter.small{height:7px}
-  .pctline{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted);margin-top:7px;font-variant-numeric:tabular-nums}
-  .pctline b{color:var(--ink);font-size:14px}
+  /* focus card */
+  .focus{background:var(--green-tint);border-color:var(--green-soft);display:flex;gap:14px;align-items:center}
+  .focus .ficon{flex:none;width:62px;height:62px;border-radius:16px;background:var(--green-soft);display:grid;place-items:center;color:var(--green)}
+  .focus .fbody{flex:1;min-width:0}
+  .focus .eyebrow{color:var(--green-deep)}
+  .focus h2{font-size:19px;font-weight:800;margin:3px 0 2px;letter-spacing:-.01em}
+  .focus .fsub{font-size:13px;color:var(--muted)}
+  .focus .chev{flex:none;width:46px;height:46px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--green)}
+  .bar{height:8px;background:var(--track);border-radius:999px;overflow:hidden;margin-top:10px}
+  .bar>i{display:block;height:100%;background:var(--green);border-radius:999px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .barline{display:flex;justify-content:space-between;font-size:12.5px;margin-top:7px;font-variant-numeric:tabular-nums}
+  .barline b{font-weight:700}
+  .ontrack{color:var(--green-deep);font-weight:600}
 
-  /* task list */
-  ul.tasks{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
-  .task{display:flex;gap:12px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;transition:opacity .3s}
-  .task .tick{flex:none;width:24px;height:24px;margin-top:1px;border-radius:8px;border:2px solid var(--muted);background:none;display:grid;place-items:center;font-size:14px;line-height:1;color:transparent}
-  .task .tick:hover{border-color:var(--accent)}
-  .task.done{opacity:.62}
-  .task.done .tick{background:var(--good);border-color:var(--good);color:#fff}
+  /* stat tiles */
+  .tiles{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:14px}
+  @media(min-width:460px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+  .tile .ticon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;margin-bottom:6px}
+  .tile .tnum{font-size:21px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .tile .tlab{font-size:12px;color:var(--muted)}
+  .chip{margin-top:8px;font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 10px}
+  .c-green{background:var(--green-soft);color:var(--green-deep)}
+  .c-blue{background:var(--blue-soft);color:var(--blue)}
+  .c-purple{background:var(--purple-soft);color:var(--purple)}
+  .c-orange{background:var(--orange-soft);color:var(--orange)}
+  .i-green{background:var(--green-soft);color:var(--green)}
+  .i-blue{background:var(--blue-soft);color:var(--blue)}
+  .i-purple{background:var(--purple-soft);color:var(--purple)}
+  .i-orange{background:var(--orange-soft);color:var(--orange)}
+
+  /* plan */
+  .plangrid{display:grid;gap:18px}
+  @media(min-width:520px){.plangrid{grid-template-columns:1fr 1fr}}
+  .tl{position:relative}
+  .tlrow{display:flex;gap:12px;padding:7px 0}
+  .tltime{flex:none;width:46px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:1px;text-align:right}
+  .tldotcol{flex:none;width:14px;display:flex;flex-direction:column;align-items:center}
+  .tldot{width:12px;height:12px;border-radius:50%;margin-top:3px;flex:none}
+  .tlline{width:2px;flex:1;background:var(--line);margin-top:3px}
+  .tlrow:last-child .tlline{display:none}
+  .tlt{font-size:13.5px;font-weight:700}
+  .tls{font-size:12px;color:var(--muted)}
+  .tlrow.nowrow .tlt{color:var(--green-deep)}
+  .d-green{background:var(--green)} .d-blue{background:var(--blue)} .d-purple{background:var(--purple)} .d-gray{background:#C3C9D0}
+  .motiv{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;padding:8px 4px}
+  .motiv .m1{font-size:14px;color:var(--ink-2);margin-top:8px}
+  .motiv .m2{font-size:19px;font-weight:800;color:var(--green-deep);letter-spacing:-.01em}
+  .startbtn{margin-top:14px;background:var(--green-soft);color:var(--green-deep);font-weight:700;font-size:14px;border-radius:999px;padding:12px 22px;display:inline-flex;align-items:center;gap:8px}
+  .startbtn:hover{background:var(--green);color:#fff}
+
+  /* tasks */
+  ul.tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .task{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;transition:opacity .3s}
+  .task .tick{flex:none;width:24px;height:24px;margin-top:1px;border-radius:50%;border:2px solid #C3C9D0;background:var(--card);display:grid;place-items:center;font-size:13px;line-height:1;color:transparent}
+  .task .tick:hover{border-color:var(--green)}
+  .task.done{opacity:.6}
+  .task.done .tick{background:var(--green);border-color:var(--green);color:#fff}
   .task.done .tname{text-decoration:line-through}
-  .tname{font-weight:600;font-size:14.5px}
-  .tmeta{font-size:12.5px;color:var(--muted);margin-top:2px}
-  .tproj{display:inline-block;font-size:11.5px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:1px 9px;margin-right:6px}
+  .tname{font-weight:600;font-size:14px}
+  .tmeta{font-size:12px;color:var(--muted);margin-top:2px}
+  .tproj{display:inline-block;font-size:11px;font-weight:700;color:var(--green-deep);background:var(--green-soft);border-radius:999px;padding:1px 9px;margin-right:6px}
+  .tasknote{font-size:12.5px;color:var(--muted);margin-top:10px}
 
-  /* stages */
-  .journey{display:flex;align-items:center;gap:0;margin:12px 0 4px;flex-wrap:wrap;row-gap:8px}
-  .stage{display:flex;align-items:center;gap:0}
-  .stage .dot{width:10px;height:10px;border-radius:50%;background:var(--track);border:2px solid var(--track)}
-  .stage.donept .dot{background:var(--gold-bar);border-color:var(--gold-bar)}
-  .stage.now .dot{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-  .stage .slabel{font-size:11.5px;color:var(--muted);margin:0 8px 0 6px;white-space:nowrap}
-  .stage.now .slabel{color:var(--ink);font-weight:600}
-  .stage .link{width:18px;height:2px;background:var(--track);margin-right:8px}
-  .stage.donept .link{background:var(--gold-bar)}
+  /* journey */
+  .journey{display:flex;align-items:flex-start;margin:14px 0 4px}
+  .jstep{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
+  .jline{flex:1;height:2px;background:var(--line);margin-top:14px;min-width:14px}
+  .jline.jdone{background:var(--green)}
+  .jcirc{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .jcirc.done{background:var(--green);color:#fff}
+  .jcirc.now{background:var(--card);border:3px solid var(--blue-soft);border-top-color:var(--blue);border-right-color:var(--blue)}
+  .jcirc.todo{background:var(--card);border:3px solid var(--track)}
+  .jlab{font-size:11px;color:var(--muted);text-align:center;line-height:1.25}
+  .jstep.on .jlab{color:var(--ink);font-weight:600}
 
   /* project cards */
-  .cat-head{display:flex;align-items:baseline;gap:10px;margin:30px 0 12px}
-  .cat-head h2{font-family:Spectral,Georgia,serif;font-size:21px;font-weight:600;margin:0}
-  .cat-head .cnote{font-size:13px;color:var(--muted)}
-  .pcard{cursor:pointer}
-  .pcard:hover{border-color:var(--accent)}
-  .prow{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-  .ptag{font-size:12.5px;color:var(--muted)}
-  .due-pill{font-size:11.5px;font-weight:600;color:var(--ink-2);background:var(--lavender);border-radius:999px;padding:2px 10px;white-space:nowrap}
-  details.pdetail summary{list-style:none;cursor:pointer}
-  details.pdetail summary::-webkit-details-marker{display:none}
+  .sect{display:flex;align-items:baseline;gap:10px;margin:22px 2px 12px}
+  .sect h2{font-size:18px;font-weight:800;margin:0;letter-spacing:-.01em}
+  .sect .cnote{font-size:12.5px;color:var(--muted)}
+  details.pcard summary{list-style:none;cursor:pointer}
+  details.pcard summary::-webkit-details-marker{display:none}
+  .prow{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+  .prow h3{font-size:16px;font-weight:800;margin:0}
+  .ptag{font-size:13px;color:var(--muted);margin-top:2px}
+  .due-pill{font-size:11px;font-weight:700;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
   .cols{display:grid;gap:14px;margin-top:14px}
-  @media(min-width:640px){.cols{grid-template-columns:1fr 1fr}}
-  .checklist{margin:6px 0 0;padding:0;list-style:none;font-size:13.5px;display:flex;flex-direction:column;gap:5px}
-  .checklist li{padding-left:24px;position:relative;color:var(--ink-2)}
+  @media(min-width:520px){.cols{grid-template-columns:1fr 1fr}}
+  .colh{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .checklist{margin:0;padding:0;list-style:none;font-size:13px;display:flex;flex-direction:column;gap:5px}
+  .checklist li{padding-left:22px;position:relative;color:var(--ink-2)}
   .checklist li::before{position:absolute;left:0;top:0}
-  .checklist.donels li::before{content:"✓";color:var(--good);font-weight:700}
+  .checklist.donels li::before{content:"✓";color:var(--green);font-weight:700}
   .checklist.remainls li::before{content:"○";color:var(--muted)}
-  .boardlink{font-size:12.5px;font-weight:600}
-  .cheer{font-size:13px;color:var(--accent-ink);background:var(--accent-soft);border-radius:9px;padding:8px 12px;margin-top:12px}
+  .cheer{font-size:13px;color:var(--green-deep);background:var(--green-soft);border-radius:12px;padding:10px 13px;margin-top:12px}
+  .plinks{margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
 
-  /* rhythm */
-  .rblock{display:flex;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
-  .rblock:last-child{border-bottom:none}
-  .rtime{flex:none;width:104px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
-  .rname{font-weight:600;font-size:14.5px}
-  .rnote{font-size:12.5px;color:var(--muted)}
-  .rblock.now{background:var(--accent-soft);border-radius:10px;padding:11px 12px;margin:0 -12px;border-bottom:none}
-  .rblock.now .rtime{color:var(--accent-ink);font-weight:600}
-  .nowchip{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--accent-ink);text-transform:uppercase;margin-left:8px}
-  table.week{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
-  table.week td{padding:9px 8px;border-bottom:1px dashed var(--line);vertical-align:top}
-  table.week td:first-child{font-weight:700;width:52px;color:var(--accent-ink)}
-  table.week tr:last-child td{border-bottom:none}
+  /* split cards */
+  .split{display:grid;gap:12px;grid-template-columns:1fr 1fr;margin-bottom:14px}
+  @media(max-width:430px){.split{grid-template-columns:1fr}}
+  .mini{margin-bottom:0;padding:16px}
+  .mini .row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .mini .row:last-child{border-bottom:none}
+  .mini .row .when{color:var(--muted);font-size:12px;white-space:nowrap;margin-left:8px}
+  .mini .rname{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* wins */
-  .wins-grid{display:grid;gap:12px}
-  @media(min-width:640px){.wins-grid{grid-template-columns:1fr 1fr}}
-  .win{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
-  .win .wicon{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-size:19px}
-  .win .wt{font-weight:600;font-size:14px}
-  .win .wd{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .wins-grid{display:grid;gap:10px}
+  @media(min-width:460px){.wins-grid{grid-template-columns:1fr 1fr}}
+  .win{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--shadow)}
+  .win .wicon{flex:none;width:38px;height:38px;border-radius:12px;background:var(--orange-soft);display:grid;place-items:center;font-size:18px}
+  .win .wt{font-weight:700;font-size:13.5px}
+  .win .wd{font-size:12px;color:var(--muted);margin-top:1px}
   .win.locked{opacity:.5}
-  .win.locked .wicon{background:var(--surface-2)}
+  .win.locked .wicon{background:var(--bg)}
 
-  /* stats */
-  .tiles{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
-  @media(min-width:760px){.tiles{grid-template-columns:repeat(4,1fr)}}
-  .tile{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow)}
-  .tile .num{font-family:Spectral,Georgia,serif;font-size:32px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
-  .tile .lab{font-size:12.5px;color:var(--muted);margin-top:6px}
-  .chart{margin-top:8px}
+  /* chart */
   .chart svg{width:100%;height:auto;display:block}
-  .chart text{font:11.5px Inter,sans-serif;fill:var(--muted)}
-  .chart .val{font-weight:600;fill:var(--ink)}
+  .chart text{font:11px Inter,sans-serif;fill:var(--muted)}
+  .chart .val{font-weight:700;fill:var(--ink)}
+
+  /* rhythm table */
+  table.week{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  table.week td{padding:8px 6px;border-bottom:1px dashed var(--line);vertical-align:top}
+  table.week td:first-child{font-weight:800;width:46px;color:var(--green-deep)}
+  table.week tr:last-child td{border-bottom:none}
+
+  /* bottom nav */
+  nav.bottom{position:fixed;left:0;right:0;bottom:0;background:var(--nav-bg);border-top:1px solid var(--line);z-index:30}
+  .navin{max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-around;padding:8px 8px calc(10px + env(safe-area-inset-bottom))}
+  .navbtn{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);width:64px;padding:4px 0}
+  .navbtn svg{display:block}
+  .navbtn[aria-selected="true"]{color:var(--green-deep)}
+  .fab{width:54px;height:54px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;box-shadow:0 8px 20px rgba(22,163,74,.35);margin-top:-26px}
+  .fab:hover{background:var(--green-deep)}
+  .fablabel{font-size:11px;font-weight:600;color:var(--muted);margin-top:3px}
+
+  /* modal + sheet */
+  .overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:40;display:grid;place-items:end center}
+  .sheet{background:var(--card);border-radius:22px 22px 0 0;width:100%;max-width:560px;padding:22px 20px calc(26px + env(safe-area-inset-bottom));box-shadow:var(--shadow)}
+  .sheet h2{font-size:17px;font-weight:800;margin:0 0 4px}
+  .sheet .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+  .sheet input,.sheet select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .primarybtn{width:100%;background:var(--green);color:#fff;font-weight:700;border-radius:999px;padding:13px;font-size:15px}
+  .primarybtn:hover{background:var(--green-deep)}
+  .sheet .menu a{display:flex;justify-content:space-between;padding:11px 2px;border-bottom:1px dashed var(--line);color:var(--ink);font-weight:600;font-size:14px}
+  .sheet .menu a:last-child{border-bottom:none}
+  .sheet .menu a span{color:var(--muted);font-weight:400;font-size:12.5px}
 
   /* toast + confetti */
-  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .35s;z-index:50;max-width:88vw;text-align:center}
-  :root[data-theme="dark"] #toast{background:var(--accent);color:#171430}
+  #toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .35s;z-index:60;max-width:88vw;text-align:center}
   #toast.show{opacity:1;transform:translate(-50%,0)}
-  #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
   .view{display:none}
-  .view.active{display:block;animation:fadein .35s ease}
+  .view.active{display:block;animation:fadein .3s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-  .sun-card{background:linear-gradient(135deg,var(--accent-soft),var(--surface));border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
-  .sun-card p{margin:6px 0 0;color:var(--ink-2)}
-  .footer-note{margin-top:44px;font-size:12.5px;color:var(--muted);text-align:center}
+  .suncard{background:linear-gradient(160deg,var(--green-tint),var(--card));border:1px solid var(--green-soft);border-radius:20px;padding:22px;box-shadow:var(--shadow);margin-bottom:14px}
+  .suncard h2{font-size:19px;font-weight:800;margin:0}
+  .suncard p{margin:8px 0 0;color:var(--ink-2);font-size:14px}
+  .footer-note{margin-top:26px;font-size:12px;color:var(--muted);text-align:center}
+  .profilehead{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+  .bigavatar{width:58px;height:58px;border-radius:50%;background:var(--green);color:#fff;font-weight:800;font-size:23px;display:grid;place-items:center}
+  .profilehead .pn{font-size:18px;font-weight:800}
+  .profilehead .pe{font-size:13px;color:var(--muted)}
 </style>
 
-<div class="wrap">
-  <header>
-    <div class="headrow">
-      <div>
-        <div class="kicker">Daybreak · your command center</div>
-        <h1 class="greet" id="greeting">Good morning, Kevin 👋</h1>
-        <div class="datesub" id="datesub"></div>
-      </div>
-      <div class="streak-chip" id="streakchip"></div>
+<div class="app">
+  <div class="topbar">
+    <button class="icbtn" id="menubtn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h10M4 17h13"/></svg>
+    </button>
+    <div class="right">
+      <button class="icbtn" id="bellbtn" aria-label="Notifications">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span class="bell-dot" id="belldot"></span>
+      </button>
+      <div class="avatar" aria-hidden="true">K</div>
     </div>
-  </header>
-
-  <nav class="tabs" role="tablist" aria-label="Sections">
-    <button class="tab" role="tab" data-view="today" aria-selected="true">Today</button>
-    <button class="tab" role="tab" data-view="projects" aria-selected="false">Projects</button>
-    <button class="tab" role="tab" data-view="rhythm" aria-selected="false">Rhythm</button>
-    <button class="tab" role="tab" data-view="wins" aria-selected="false">Wins</button>
-    <button class="tab" role="tab" data-view="progress" aria-selected="false">Progress</button>
-  </nav>
+  </div>
 
   <main>
-    <section class="view active" id="view-today"></section>
+    <section class="view active" id="view-home"></section>
     <section class="view" id="view-projects"></section>
-    <section class="view" id="view-rhythm"></section>
-    <section class="view" id="view-wins"></section>
-    <section class="view" id="view-progress"></section>
+    <section class="view" id="view-schedule"></section>
+    <section class="view" id="view-profile"></section>
   </main>
 
-  <p class="footer-note">Built from your own Trello boards and calendar — nothing here was re-entered by hand. One good step at a time. 🌱</p>
+  <p class="footer-note">Built from your own Trello boards and calendar — nothing re-entered by hand. One good step at a time. 🌱</p>
 </div>
+
+<nav class="bottom" aria-label="Main">
+  <div class="navin">
+    <button class="navbtn" data-view="home" aria-selected="true">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6h-6v6H3z"/></svg>Home</button>
+    <button class="navbtn" data-view="projects" aria-selected="false">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>Projects</button>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <button class="fab" id="fabbtn" aria-label="New task">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button><span class="fablabel">New</span>
+    </div>
+    <button class="navbtn" data-view="schedule" aria-selected="false">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Schedule</button>
+    <button class="navbtn" data-view="profile" aria-selected="false">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Profile</button>
+  </div>
+</nav>
 
 <canvas id="confetti"></canvas>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="modalroot"></div>
 
 <script>
-/* ============ Kevin's real data — pulled from his Trello Life OS, project boards and Google Calendar ============ */
+/* ============ Kevin's real data — from his Trello Life OS, project boards and Google Calendar ============ */
 const BOARDS = {
   lifeos:  "https://trello.com/b/HEGufcHJ/", isra: "https://trello.com/b/4PMi2bTw/isra-digital-command",
   loveworld:"https://trello.com/b/OLkgJrYA/loveworld-starlight", regal:"https://trello.com/b/5IMRXFEV/regal-studio",
@@ -206,8 +295,8 @@ const BOARDS = {
 
 const PROJECTS = [
   { id:"tls", emoji:"🎪", name:"TLS Festival Weekend", cat:"focus",
-    tagline:"Three nights, 28–30 Aug · built on a £0 budget, organic only",
-    stages:["Planning","Promotion","Festival live","Wrap-up"], stageIndex:2,
+    tagline:"Three nights, 28–30 Aug · £0 budget",
+    stages:["Planning","Promotion","Festival Live","Wrap-up"], stageIndex:2,
     deadline:"2026-08-30", deadlineLabel:"Runs 28–30 Aug",
     done:["Three nights planned & venues booked","Eventbrite events created for all three nights","Countdown content planned (trail → Dance Crusade pin)","Whole campaign built on £0 — organic only"],
     remaining:[
@@ -216,12 +305,12 @@ const PROJECTS = [
       {id:"tls-weekend", t:"Run the weekend — be present, enjoy it"},
       {id:"tls-wrap", t:"Wrap-up: thank-yous + what worked (after Sunday)"}],
     board:BOARDS.lifeos,
-    cheer:"Everything you prepped for weeks is live right now. Fri: Dance Night 19:00 · Sat: The Money Crusade 16:00 · Sun: The Glory of His Presence 16:00." },
+    cheer:"Everything you prepped is live right now. Fri: Dance Night 19:00 · Sat: The Money Crusade 16:00 · Sun: The Glory of His Presence 16:00." },
 
   { id:"isra", emoji:"💷", name:"Isra Digital — Money in the Door", cat:"focus",
     tagline:"Not “build the company” — revenue that actually arrives",
-    stages:["Set up","First clients","Recurring revenue","Real salary"], stageIndex:1,
-    deadline:null, deadlineLabel:"Every week, one card moves money",
+    stages:["Set up","First clients","Recurring","Salary"], stageIndex:1,
+    deadline:null, deadlineLabel:"One card moves money weekly",
     done:["Isra Digital Ltd incorporated (28 July) 🎉","LoveWorld pitch deck presented — Pastor Benjamin said yes to monthly","Brand colours + logo swapped into the deck","loveworldstarlight.org improvements shipped","River of Life charity website built & live","Interview pack built (About + Questions + Scorecard)","Business filing system + operating system in place"],
     remaining:[
       {id:"isra-price", t:"Name the LoveWorld monthly price — and send it"},
@@ -233,9 +322,9 @@ const PROJECTS = [
     cheer:"The retainer is already agreed in principle — naming the price is the only thing between you and recurring income." },
 
   { id:"ylv", emoji:"🎓", name:"Young Life Vision Workshop", cat:"focus",
-    tagline:"App Development & Digital Innovation — teaching young people in Salford",
-    stages:["Agree scope","Prep","Sessions running","Complete"], stageIndex:1,
-    deadline:"2026-09-28", deadlineLabel:"Sessions start end of Sept",
+    tagline:"App Development & Digital Innovation — teaching in Salford",
+    stages:["Agree scope","Prep","Sessions","Complete"], stageIndex:1,
+    deadline:"2026-09-28", deadlineLabel:"Starts end of Sept",
     done:["Workshop agreed with Eloho & Nancy","Venue confirmed — 50 Rigby Street, Salford","You earned the room: you're the teacher"],
     remaining:[
       {id:"ylv-list", t:"Send Eloho the equipment + software list (unblocks their sourcing)"},
@@ -245,12 +334,12 @@ const PROJECTS = [
     cheer:"This puts you in a room teaching — which feeds everything else you're building." },
 
   { id:"clip", emoji:"✂️", name:"Clipping Business", cat:"next",
-    tagline:"Takes slot 1 on Mon 31 Aug — the 30-day launch sequence is ready",
+    tagline:"Takes slot 1 on Mon 31 Aug — launch sequence ready",
     stages:["Agree","Proof","Sell","Systemise"], stageIndex:0,
     deadline:"2026-09-30", deadlineLabel:"Day-30 test: one paying client",
     done:["30-day launch sequence written","Partnership direction decided"],
     remaining:[
-      {id:"clip-w1", t:"Week 1: one-page partner agreement · name + one-line offer · pick ONE niche"},
+      {id:"clip-w1", t:"Week 1: one-page partner agreement · name + offer · pick ONE niche"},
       {id:"clip-w2", t:"Week 2: clip 3 real videos free — that's the portfolio"},
       {id:"clip-w3", t:"Week 3: 20 outreach messages → first paying client"},
       {id:"clip-w4", t:"Week 4: delivery SOP + a turnaround promise you can keep"}],
@@ -258,20 +347,20 @@ const PROJECTS = [
     cheer:"Queued on purpose — it gets your full attention the moment the festival wraps." },
 
   { id:"church", emoji:"⛪", name:"Church Social Media Team", cat:"maintain",
-    tagline:"Your seat: Lead. One seat, not five — build the team, don't be the team",
-    stages:["Pack ready","Meeting held","Team running"], stageIndex:0,
+    tagline:"Your seat: Lead. Build the team, don't be the team",
+    stages:["Pack ready","Meeting","Running"], stageIndex:0,
     deadline:"2026-09-04", deadlineLabel:"Meeting w/c 31 Aug",
     done:["Roles pack ready — 45-min agenda, five seats, weekly cycle"],
     remaining:[
       {id:"church-book", t:"Book the roles meeting for w/c 31 Aug (10-minute job)"},
       {id:"church-meet", t:"Hold the meeting — fill the five seats"},
-      {id:"church-ceiling", t:"Set your weekly ceiling (hours, days, hard cut-off)"}],
+      {id:"church-ceiling", t:"Set your weekly ceiling (hours, days, cut-off)"}],
     board:BOARDS.lifeos, cheer:"The agenda is already written. You just pick a date and send it." },
 
   { id:"backoffice", emoji:"🏛️", name:"Isra Digital Ltd — Back Office", cat:"maintain",
-    tagline:"Boring, small, and can't be missed — 30 minutes a week is plenty",
+    tagline:"Small and steady — 30 minutes a week is plenty",
     stages:["Incorporated","Banking","Compliant"], stageIndex:1,
-    deadline:"2026-10-28", deadlineLabel:"CT registration ≈ end of Oct",
+    deadline:"2026-10-28", deadlineLabel:"CT reg ≈ end of Oct",
     done:["Company incorporated (28 July)","Mettle application submitted"],
     remaining:[
       {id:"bo-ct", t:"Corporation Tax registration (within 3 months of trading)"},
@@ -282,7 +371,7 @@ const PROJECTS = [
 
   { id:"money", emoji:"🏦", name:"Business ≠ Personal Money", cat:"maintain",
     tagline:"Finite job — finish it once and it stays fixed",
-    stages:["Decided","Separated","Habit running"], stageIndex:0,
+    stages:["Decided","Separated","Habit"], stageIndex:0,
     deadline:"2026-09-30", deadlineLabel:"Done by 30 Sep",
     done:[],
     remaining:[
@@ -312,8 +401,8 @@ const PROJECTS = [
     deadline:null, deadlineLabel:"Finish line: loads on Railway",
     done:["Full app built — web + mobile","Migration off Replit mostly done"],
     remaining:[
-      {id:"pb-deploy", t:"Deploy on Railway and watch it load — that's the whole finish line"},
-      {id:"pb-angi", t:"Later (when it earns an Active slot): give Angi the screens + update guide"}],
+      {id:"pb-deploy", t:"Deploy on Railway and watch it load — the whole finish line"},
+      {id:"pb-angi", t:"Later: give Angi the screens + update guide"}],
     board:BOARDS.prayer, cheer:"You're one deploy away from calling this chapter closed." },
 
   { id:"kaptur", emoji:"🎟️", name:"KAPTUR", cat:"maintain",
@@ -333,11 +422,11 @@ const PROJECTS = [
     board:BOARDS.charity, cheer:"This might already be a finished project wearing a to-do's clothes." },
 
   { id:"lbh", emoji:"🏠", name:"LBH — Let's Build Home", cat:"parked",
-    tagline:"Blocked on one thing: a working payout rail into Zimbabwe",
+    tagline:"Blocked on one thing: a payout rail into Zimbabwe",
     stages:["Concept","Blocked","Buildable","Live"], stageIndex:1,
     deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
     done:["Brand concept board built","Marketplace design explored"],
-    remaining:[{id:"lbh-q", t:"One question: run manual batch payouts for the first 10 transactions — yes or no?"}],
+    remaining:[{id:"lbh-q", t:"One question: manual batch payouts for the first 10 — yes or no?"}],
     board:BOARDS.lbh, cheer:"Parked is a decision, not a failure. It costs you nothing until 30 Nov." },
 
   { id:"devpool", emoji:"👥", name:"Dev Pool", cat:"parked",
@@ -345,7 +434,7 @@ const PROJECTS = [
     stages:["Planned","Leads warm","First client"], stageIndex:1,
     deadline:"2026-11-30", deadlineLabel:"Revisit 30 Nov",
     done:["Full operating plan: roles, SOPs, risk register"],
-    remaining:[{id:"dp-leads", t:"Reply to the warm leads (allowed) — promote the day a client signs"}],
+    remaining:[{id:"dp-leads", t:"Reply to warm leads — promote the day a client signs"}],
     board:BOARDS.lifeos, cheer:"You're not short of plan. Keep the leads warm and let it wait." },
 
   { id:"sammie", emoji:"📱", name:"Sammie's App", cat:"parked",
@@ -383,33 +472,41 @@ const PROJECTS = [
 
 /* This Week (max 5) — from the Life OS board */
 const THIS_WEEK = [
-  { id:"tls-landing",  proj:"tls",  est:"1–2 h",  why:"Nothing else on the campaign works until the destination works" },
+  { id:"tls-landing",  proj:"tls",  est:"1–2 h",  why:"Nothing on the campaign works until the destination works" },
   { id:"tls-countdown",proj:"tls",  est:"half a day", why:"One batch, then hands off — no mid-week redesigns" },
-  { id:"isra-price",   proj:"isra", est:"45 min", why:"Pastor Benjamin already said yes to monthly — this unlocks recurring income" },
-  { id:"ylv-list",     proj:"ylv",  est:"30 min", why:"They asked for it — sending it now unblocks their computer sourcing" },
-  { id:"church-book",  proj:"church", est:"10 min", why:"Booking is this week; the meeting itself is after the festival" }
+  { id:"isra-price",   proj:"isra", est:"45 min", why:"Pastor Benjamin already said yes to monthly" },
+  { id:"ylv-list",     proj:"ylv",  est:"30 min", why:"Sending it now unblocks their computer sourcing" },
+  { id:"church-book",  proj:"church", est:"10 min", why:"Booking is this week; the meeting is after the festival" }
 ];
 
-/* Weekday rhythm — from Kevin's Google Calendar (recurring events) */
-const RHYTHM_WEEKDAY = [
-  ["07:00","08:00","🕊️ Devotion","Worship, Bible, prayer — before the phone"],
-  ["09:00","09:20","🧭 Morning launch","Open Daybreak, pick today's three"],
-  ["09:20","13:00","📈 ON the business","People and money: outreach, clients, sales"],
-  ["13:00","13:45","🍽️ Lunch & reset","Off the screen properly. Eat. Walk."],
-  ["13:45","18:15","🛠️ IN the business","Hands-on building, editing, shipping"],
-  ["18:15","18:30","🌙 Shutdown","Log today's wins, empty your head, pick tomorrow's one thing"]
+/* Daily plans — from Kevin's Google Calendar rhythm */
+const PLAN_WEEKDAY = [
+  ["07:00","08:00","Devotion","Worship, Bible, prayer — before the phone","purple","personal"],
+  ["09:00","09:20","Morning launch","Open Daybreak, pick today's three","green","work"],
+  ["09:20","13:00","ON the business","People & money: outreach, clients, sales","green","work"],
+  ["13:00","13:45","Lunch break","Step away and reset","gray","break"],
+  ["13:45","18:15","IN the business","Hands-on building, editing, shipping","blue","work"],
+  ["18:15","18:30","Shutdown","Log wins, empty your head, pick tomorrow's one thing","purple","work"]
+];
+const PLAN_SATURDAY = [
+  ["09:00","10:30","Content batching (morning)","Plan + create key content","green","work"],
+  ["10:30","10:45","Break","Rest and recharge","gray","break"],
+  ["10:45","13:00","Project work","Focus-project prep + promotion","blue","work"],
+  ["13:00","14:00","Lunch break","Step away and reset","gray","break"],
+  ["14:00","19:00","Angie's time","Afternoon and evening are hers 💛","purple","personal"],
+  ["19:00","20:00","Evening wind-down","Review + gentle preparation","purple","personal"]
 ];
 const WEEK_GLANCE = [
   ["Mon","Heaviest build day — protect it, no calls before 12. Weekly plan at 09:20."],
   ["Tue","Build + client work."],
-  ["Wed","Outreach day — every week, talk to someone who could pay you."],
+  ["Wed","Outreach day — talk to someone who could pay you."],
   ["Thu","Build + ship whatever's due."],
   ["Fri","Morning build · 17:00 Weekly review · then stop."],
   ["Sat","Content batching in the morning. Afternoon and evening are Angie's."],
-  ["Sun","Church and rest. No laptop — this day is what makes the other six work."]
+  ["Sun","Church and rest. No laptop — this day makes the other six work."]
 ];
 
-/* Wins already on the board — real, from Kevin's own history */
+/* Wins already earned — real, from Kevin's own history */
 const WINS = [
   ["🏢","Isra Digital Ltd incorporated","28 July 2026 — it's a real company now"],
   ["🤝","Monthly retainer agreed in principle","Pastor Benjamin said yes to paying monthly"],
@@ -423,8 +520,6 @@ const WINS = [
   ["🧭","Life OS up and running","Inbox → Big 3 → weekly review. The system works"],
   ["🚚","Prayer Buddy nearly moved","Migration off Replit is most of the way done"]
 ];
-
-/* Unlockable achievements */
 const UNLOCKS = [
   ["first",  "🌅","First step in Daybreak","Complete your first task here"],
   ["three",  "✨","A full day","3 tasks in one day"],
@@ -433,182 +528,254 @@ const UNLOCKS = [
   ["streak3","🔥","Three days in a row","Show up three working days running"],
   ["projdone","🏁","A project over the line","Every step of a project complete"]
 ];
-
 const CHEERS = [
   "✨ Nice work!","That's another piece in place.","Look at you go. 🌱","One step closer.",
-  "Momentum looks good on you.","That was on the list — and now it isn't. 💛","Quietly getting it done."
+  "Momentum looks good on you.","That was on the list — and now it isn't. 💚","Quietly getting it done."
 ];
 
 /* ============ state ============ */
 const KEY="daybreak-v1";
-let S={done:{},history:{},unlocked:{}};
+let S={done:{},history:{},unlocked:{},custom:[]};
 try{ const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
+S.custom=S.custom||[];
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
 const $=s=>document.querySelector(s);
-const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const NOW=new Date();
-const dayKey=d=>d.toISOString().slice(0,10);
+const p2=n=>String(n).padStart(2,"0");
+const dayKey=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
 const TODAY=dayKey(NOW);
-const DOW=NOW.getDay(); // 0=Sun
+const DOW=NOW.getDay();
 const FEST_ON = TODAY>="2026-08-28" && TODAY<="2026-08-30";
 
-function findTask(id){ for(const p of PROJECTS){ const r=p.remaining.find(x=>x.id===id); if(r) return {p,r}; } return null; }
+function findTask(id){
+  for(const p of PROJECTS){ const r=p.remaining.find(x=>x.id===id); if(r) return {p,r}; }
+  const c=S.custom.find(x=>x.id===id); if(c) return {p:null,r:{id:c.id,t:c.t}, custom:c};
+  return null;
+}
 function projProgress(p){
   const doneCount=p.done.length + p.remaining.filter(r=>S.done[r.id]).length;
   const total=p.done.length + p.remaining.length;
   return total? Math.round(100*doneCount/total) : 0;
 }
 function totalDone(){ return Object.keys(S.done).length; }
+function streak(){
+  let s=0; const d=new Date(NOW);
+  if(!S.history[dayKey(d)]) d.setDate(d.getDate()-1); // allow "yesterday-ended" streaks
+  while(S.history[dayKey(d)]>0){ s++; d.setDate(d.getDate()-1); }
+  return s;
+}
+function todaysPlan(){ return DOW===0?null : DOW===6?PLAN_SATURDAY : PLAN_WEEKDAY; }
+function toMin(s){ return +s.slice(0,2)*60 + +s.slice(3,5); }
+function fmtDur(mins){ const h=Math.floor(mins/60),m=mins%60; return (h?h+"h":"")+(m?" "+m+"m":h?"":"0m"); }
 
-/* ============ header ============ */
-function renderHeader(){
-  const h=NOW.getHours();
-  const g=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
-  $("#greeting").textContent=`${g}, Kevin 👋`;
-  $("#datesub").textContent=NOW.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  const days=Object.keys(S.history).filter(k=>S.history[k]>0).length;
-  const t=totalDone();
-  $("#streakchip").innerHTML = t
-    ? `<strong>${t}</strong> task${t===1?"":"s"} done · <strong>${days}</strong> active day${days===1?"":"s"} 🌱`
-    : `Fresh page. Let's make today count 🌱`;
+function todaysTasks(){
+  const week=THIS_WEEK.map(t=>{const f=findTask(t.id);return f?{...t,name:f.r.t,pname:f.p.name.split("—")[0].trim(),pemoji:f.p.emoji}:null}).filter(Boolean);
+  const custom=S.custom.filter(c=>c.day===TODAY||!S.done[c.id]).map(c=>({id:c.id,name:c.t,pname:c.proj||"Personal",pemoji:"📝",est:null,why:null,custom:true}));
+  const open=[...week.filter(t=>!S.done[t.id]),...custom.filter(t=>!S.done[t.id])];
+  const doneList=[...week,...custom].filter(t=>S.done[t.id]===TODAY);
+  return {open,doneList,week,custom};
 }
 
-/* ============ today ============ */
-function renderToday(){
-  const v=$("#view-today");
-  if(DOW===0){
-    v.innerHTML=`<div class="sun-card">
-      <h2 style="font-family:Spectral,Georgia,serif;margin:0;font-size:22px">It's Sunday. 🌿</h2>
-      <p>Church and rest — no laptop today. Sunday off isn't a reward for finishing; it's the thing that makes the other six days work.</p>
-      <p style="margin-top:10px">Everything will be right here tomorrow morning. Enjoy the day.</p>
-    </div>`;
-    return;
-  }
-  const focus = FEST_ON ? PROJECTS.find(p=>p.id==="tls")
+/* ============ views ============ */
+function focusProject(){
+  return FEST_ON ? PROJECTS.find(p=>p.id==="tls")
     : PROJECTS.filter(p=>p.cat==="focus").sort((a,b)=>(a.deadline||"9999")<(b.deadline||"9999")?-1:1)[0];
-  const fpct=projProgress(focus);
-
-  const open=THIS_WEEK.filter(t=>!S.done[t.id]);
-  const pick=open.slice(0,3);
-  const doneToday=S.history[TODAY]||0;
-  const goal=Math.max(pick.length, Math.min(3,doneToday||pick.length||1));
-  const satNote = DOW===6 ? `<div class="cheer" style="margin-top:0;margin-bottom:14px">Saturday shape: content batching this morning — the afternoon and evening are Angie's. 💛</div>`:"";
-
-  v.innerHTML = `
-    ${satNote}
-    <div class="grid two">
-      <div class="card">
-        <h3>Today's focus</h3>
-        <h2>${focus.emoji} ${esc(focus.name)}</h2>
-        <div class="ptag">${esc(focus.tagline)}</div>
-        ${journeyHTML(focus)}
-        <div class="meter" style="margin-top:10px"><i style="width:${fpct}%"></i></div>
-        <div class="pctline"><span><b>${fpct}%</b> there</span><span>${esc(focus.deadlineLabel||"")}</span></div>
-        <div class="cheer">${esc(focus.cheer)}</div>
-      </div>
-      <div class="card">
-        <h3>Today's progress</h3>
-        <div style="font-family:Spectral,Georgia,serif;font-size:34px;font-weight:600;font-variant-numeric:tabular-nums">${doneToday} <span style="font-size:18px;color:var(--muted)">/ ${goal} task${goal===1?"":"s"}</span></div>
-        <div class="meter" style="margin-top:10px"><i style="width:${goal?Math.min(100,Math.round(100*doneToday/goal)):0}%"></i></div>
-        <div class="pctline"><span>${doneToday>=goal&&goal>0?"That's a full day. Anything more is a bonus. ✨":doneToday>0?"You're already moving. Keep going gently.":"Small steps count. Pick one below."}</span></div>
-        <h3 style="margin-top:18px">Your working day</h3>
-        <div style="font-size:13.5px;color:var(--ink-2)">${DOW===6?"Morning only — content batching":"09:00 – 18:30 · mornings for people & money, afternoons for building"}</div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h3>From this week's five</h3>
-      ${pick.length?`<ul class="tasks">${pick.map(taskHTML).join("")}</ul>
-        <div style="font-size:12.5px;color:var(--muted);margin-top:10px">Three is enough for a good day. The rest will wait patiently.</div>`
-      :`<div class="cheer">All five of this week's tasks are done. That's the whole list — enjoy the space you made. 🎉</div>`}
-    </div>
-    ${open.length>3?`<div class="card" style="margin-top:16px"><h3>Waiting quietly (no rush)</h3><ul class="tasks">${open.slice(3).map(taskHTML).join("")}</ul></div>`:""}`;
-  bindTicks(v);
 }
 
-function taskHTML(t){
-  const f=findTask(t.id); if(!f) return "";
-  const done=!!S.done[t.id];
-  return `<li class="task ${done?"done":""}">
-    <button class="tick" data-task="${t.id}" aria-pressed="${done}" aria-label="${done?"Completed":"Mark complete"}: ${esc(f.r.t)}">✓</button>
-    <div><div class="tname">${esc(f.r.t)}</div>
-    <div class="tmeta"><span class="tproj">${f.p.emoji} ${esc(f.p.name.split("—")[0].trim())}</span>≈ ${t.est}${t.why?` · ${esc(t.why)}`:""}</div></div></li>`;
-}
-
-function bindTicks(root){
-  root.querySelectorAll(".tick").forEach(b=>b.addEventListener("click",()=>toggleTask(b.dataset.task)));
-}
-
-function toggleTask(id){
-  const was=!!S.done[id];
-  if(was){ delete S.done[id]; S.history[TODAY]=Math.max(0,(S.history[TODAY]||0)-1); }
-  else{
-    S.done[id]=TODAY; S.history[TODAY]=(S.history[TODAY]||0)+1;
-    celebrate(id);
-  }
-  save(); renderAll();
-}
-
-function celebrate(id){
-  const f=findTask(id);
-  const pct=f?projProgress(f.p):0;
-  const msgs=[CHEERS[Math.floor(Math.random()*CHEERS.length)]];
-  if(f) msgs.push(`${f.p.emoji} ${f.p.name.split("—")[0].trim()} is now ${pct}% along.`);
-  const dt=(S.history[TODAY]||0);
-  if(dt===3) msgs.push("Three today — that's a full day. 🌟");
-  toast(msgs.join("  "));
-  confetti();
-  checkUnlocks(f);
-}
-
-function checkUnlocks(f){
-  const t=totalDone(); const dt=S.history[TODAY]||0;
-  const days=Object.keys(S.history).filter(k=>S.history[k]>0).sort();
-  let streak=1;
-  for(let i=days.length-1;i>0;i--){
-    const a=new Date(days[i]), b=new Date(days[i-1]);
-    if((a-b)/864e5<=1.5) streak++; else break;
-  }
-  const won=[];
-  const un=(k,c)=>{ if(c&&!S.unlocked[k]){S.unlocked[k]=TODAY;won.push(k);} };
-  un("first",t>=1); un("three",dt>=3); un("five",t>=5); un("ten",t>=10); un("streak3",streak>=3&&days.length>=3);
-  un("projdone", f && projProgress(f.p)===100);
-  if(won.length){ const u=UNLOCKS.find(x=>x[0]===won[0]); setTimeout(()=>toast(`🏆 Achievement: ${u[2]}!`),1600); }
-  save();
-}
-
-/* ============ projects ============ */
-function journeyHTML(p){
+function journeyHTML(p,big){
   return `<div class="journey">${p.stages.map((s,i)=>{
-    const cls=i<p.stageIndex?"donept":i===p.stageIndex?"now":"";
-    return `<span class="stage ${cls}">${i?'<span class="link"></span>':""}<span class="dot"></span><span class="slabel">${esc(s)}</span></span>`;
+    const st=i<p.stageIndex?"done":i===p.stageIndex?"now":"todo";
+    const line=i? `<div class="jline ${i<=p.stageIndex?"jdone":""}"></div>`:"";
+    const inner=st==="done"?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>`:"";
+    return `${line}<div class="jstep ${st==="now"?"on":""}"><div class="jcirc ${st}">${inner}</div><div class="jlab">${esc(s)}</div></div>`;
   }).join("")}</div>`;
 }
 
+function renderHome(){
+  const v=$("#view-home");
+  const h=NOW.getHours();
+  const g=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  const sk=streak();
+  const {open,doneList}=todaysTasks();
+  const doneToday=S.history[TODAY]||0;
+  const goal=Math.max(3, doneToday); const shown=open.slice(0,3);
+
+  if(DOW===0){
+    v.innerHTML=`
+      <div class="greetrow"><div>
+        <h1 class="greet">${g}, Kevin 👋</h1>
+        <div class="datesub">${NOW.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
+      </div></div>
+      <div class="suncard">${sunSVG()}
+        <h2>It's Sunday. 🌿</h2>
+        <p>Church and rest — no laptop today. Sunday off isn't a reward for finishing; it's the thing that makes the other six days work.</p>
+        <p>Everything will be right here tomorrow morning. Enjoy the day.</p>
+      </div>`;
+    return;
+  }
+
+  const fp=focusProject(); const fpct=projProgress(fp);
+  const plan=todaysPlan();
+  const mins=NOW.getHours()*60+NOW.getMinutes();
+  const workMins=plan.filter(b=>b[5]==="work").reduce((a,b)=>a+toMin(b[1])-toMin(b[0]),0);
+  const windowMins=toMin(plan[plan.length-1][1])-toMin(plan[0][0]);
+  const avg=Math.round(PROJECTS.filter(p=>p.cat!=="parked").reduce((a,p)=>a+projProgress(p),0)/PROJECTS.filter(p=>p.cat!=="parked").length);
+  const winsTotal=WINS.length+Object.keys(S.unlocked).length;
+  const recent=recentWorked();
+
+  v.innerHTML=`
+    <div class="greetrow">
+      <div style="flex:1;min-width:200px">
+        <h1 class="greet">${g}, Kevin 👋</h1>
+        <div class="datesub">${NOW.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
+        <div class="tagline">🌱 Small steps. Big impact. You got this!</div>
+      </div>
+      <div class="streakcard">
+        <div style="font-size:22px">🔥</div>
+        <div class="slab">STREAK</div>
+        <div class="snum">${sk} <small>day${sk===1?"":"s"}</small></div>
+        <div class="ssub">${sk>0?"Keep it going! 🔥":"Today can be day one ✨"}</div>
+      </div>
+    </div>
+
+    <div class="card focus">
+      <div class="ficon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></div>
+      <div class="fbody">
+        <div class="eyebrow">Today's focus</div>
+        <h2>${esc(fp.name)}</h2>
+        <div class="fsub">${esc(fp.tagline)}</div>
+        <div class="bar"><i style="width:${fpct}%"></i></div>
+        <div class="barline"><span><b>${fpct}%</b> complete</span><span class="ontrack">${fpct>=50?"On track":"Building up"}</span></div>
+      </div>
+      <button class="chev" data-goproj="${fp.id}" aria-label="View ${esc(fp.name)}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><div class="ticon i-green"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v4H9zM9 12h6M9 16h4"/></svg></div>
+        <div class="tnum">${doneToday} / ${goal}</div><div class="tlab">Tasks today</div>
+        <button class="chip c-blue" data-scroll="taskcard">View tasks</button></div>
+      <div class="tile"><div class="ticon i-green"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+        <div class="tnum">${fmtDur(workMins)}</div><div class="tlab">Work time</div>
+        <span class="chip c-green">${Math.round(100*workMins/windowMins)}% of day</span></div>
+      <div class="tile"><div class="ticon i-purple"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17 10 11l4 4 6-7"/><path d="M15 8h5v5"/></svg></div>
+        <div class="tnum">${avg}%</div><div class="tlab">Avg progress</div>
+        <span class="chip c-purple">Across projects</span></div>
+      <div class="tile"><div class="ticon i-orange"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a4 4 0 0 0 3 3.5M17 6h3v1a4 4 0 0 1-3 3.5"/></svg></div>
+        <div class="tnum">${winsTotal}</div><div class="tlab">Total wins</div>
+        <button class="chip c-orange" data-goview="profile">View wins</button></div>
+    </div>
+
+    <div class="card">
+      <div class="cardhead"><span class="eyebrow">Today's plan</span><button class="seelink" data-goview="schedule" style="color:var(--blue);font-weight:600;font-size:13px">See full schedule</button></div>
+      <div class="plangrid">
+        <div class="tl">${plan.map(b=>{
+          const now=mins>=toMin(b[0])&&mins<toMin(b[1]);
+          const past=mins>=toMin(b[1]);
+          return `<div class="tlrow ${now?"nowrow":""}">
+            <div class="tltime">${b[0]}</div>
+            <div class="tldotcol"><div class="tldot ${past||now?"d-"+b[4]:"d-gray"}"></div><div class="tlline"></div></div>
+            <div><div class="tlt">${esc(b[2])}${now?" · now":""}</div><div class="tls">${esc(b[3])}</div></div></div>`;
+        }).join("")}</div>
+        <div class="motiv">${sunSVG()}
+          <div class="m1">You've got the plan.</div>
+          <div class="m2">Now make it happen.</div>
+          <button class="startbtn" id="startnext">Start next task
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="taskcard">
+      <div class="cardhead"><span class="eyebrow">Today's tasks</span><span style="font-size:12.5px;color:var(--muted)">${doneToday} done</span></div>
+      ${shown.length?`<ul class="tasks">${shown.map(taskHTML).join("")}</ul>
+        <div class="tasknote">Three is enough for a good day. The rest will wait patiently.</div>`
+      :`<div class="cheer">Everything on today's list is done. Enjoy the space you made. 🎉</div>`}
+      ${open.length>3?`<div class="colh" style="margin:14px 0 8px">Waiting quietly (no rush)</div><ul class="tasks">${open.slice(3).map(taskHTML).join("")}</ul>`:""}
+      ${doneList.length?`<div class="colh" style="margin:14px 0 8px">Done today ✓</div><ul class="tasks">${doneList.map(taskHTML).join("")}</ul>`:""}
+    </div>
+
+    <div class="card">
+      <div class="cardhead"><span class="eyebrow">${esc(fp.emoji)} ${esc(fp.name)}</span><button class="seelink" data-goproj="${fp.id}" style="color:var(--blue);font-weight:600;font-size:13px">View project</button></div>
+      ${journeyHTML(fp)}
+      <div class="bar"><i style="width:${fpct}%"></i></div>
+      <div class="barline"><span><b>${fpct}%</b> complete</span><span style="color:var(--muted)">${esc(fp.deadlineLabel||"")}</span></div>
+    </div>
+
+    <div class="split">
+      <div class="card mini">
+        <div class="cardhead" style="margin-bottom:6px"><span class="eyebrow">Recently worked on</span><button class="seelink" data-goview="projects" style="color:var(--blue);font-weight:600;font-size:12.5px">See all</button></div>
+        ${recent.length?recent.map(r=>`<div class="row"><span class="rname">${r.emoji} ${esc(r.name)}</span><span class="when">${r.when}</span></div>`).join("")
+          :`<div class="row"><span class="rname">${fp.emoji} ${esc(fp.name.split("—")[0].trim())}</span><span class="when">Today</span></div>`}
+      </div>
+      <div class="card mini">
+        <div class="cardhead" style="margin-bottom:6px"><span class="eyebrow">Quick wins</span><button class="seelink" data-goview="profile" style="color:var(--blue);font-weight:600;font-size:12.5px">See all</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div style="font-size:13px;color:var(--ink-2)">${doneToday>0?`<b>${doneToday}</b> small win${doneToday===1?"":"s"} today — they add up.`:"Small wins today, big wins this week."}</div>
+          <div style="font-size:26px">🎉</div>
+        </div>
+      </div>
+    </div>`;
+  bindCommon(v);
+  const sn=$("#startnext");
+  if(sn) sn.addEventListener("click",()=>{ const t=$("#taskcard"); t&&t.scrollIntoView({behavior:"smooth",block:"start"}); toast(shown.length?"This one first: “"+shown[0].name.slice(0,50)+(shown[0].name.length>50?"…":"")+"”":"All clear — add one with the + button if you like."); });
+}
+
+function recentWorked(){
+  const items=Object.entries(S.done).sort((a,b)=>a[1]<b[1]?1:-1).slice(0,4).map(([id,d])=>{
+    const f=findTask(id); if(!f) return null;
+    const p=f.p||{emoji:"📝",name:"Personal"};
+    const when=d===TODAY?"Today":new Date(d+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+    return {emoji:p.emoji,name:(p.name||"Personal").split("—")[0].trim(),when};
+  }).filter(Boolean);
+  const seen=new Set(); return items.filter(r=>!seen.has(r.name)&&seen.add(r.name)).slice(0,3);
+}
+
+function taskHTML(t){
+  const done=!!S.done[t.id];
+  return `<li class="task ${done?"done":""}">
+    <button class="tick" data-task="${t.id}" aria-pressed="${done}" aria-label="${done?"Completed":"Mark complete"}: ${esc(t.name)}">✓</button>
+    <div><div class="tname">${esc(t.name)}</div>
+    <div class="tmeta"><span class="tproj">${t.pemoji} ${esc(t.pname)}</span>${t.est?`≈ ${t.est}`:""}${t.why?` · ${esc(t.why)}`:""}</div></div></li>`;
+}
+
+function sunSVG(){
+  return `<svg width="120" height="86" viewBox="0 0 120 86" role="img" aria-label="Sunrise over hills">
+    <g stroke="var(--orange)" stroke-width="3" stroke-linecap="round">
+      <line x1="60" y1="6" x2="60" y2="14"/><line x1="34" y1="15" x2="39" y2="22"/><line x1="86" y1="15" x2="81" y2="22"/>
+      <line x1="22" y1="38" x2="30" y2="38"/><line x1="98" y1="38" x2="90" y2="38"/></g>
+    <circle cx="60" cy="38" r="16" fill="var(--orange)"/>
+    <circle cx="54.5" cy="36" r="1.8" fill="#7C4A03"/><circle cx="65.5" cy="36" r="1.8" fill="#7C4A03"/>
+    <path d="M54 41c2 2.6 10 2.6 12 0" stroke="#7C4A03" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M4 86c14-22 34-26 52-14 4-3 8-5 13-6 18-3 33 6 47 20z" fill="var(--green-soft)"/>
+    <path d="M0 86c18-16 44-18 60-4 16-10 40-8 60 4z" fill="var(--green)" opacity=".55"/>
+  </svg>`;
+}
+
+/* ---- projects ---- */
 function projCardHTML(p){
   const pct=projProgress(p);
-  const doneList=[...p.done, ...p.remaining.filter(r=>S.done[r.id]).map(r=>r.t)];
-  const remainList=p.remaining.filter(r=>!S.done[r.id]).map(r=>r.t);
-  return `<details class="card pcard pdetail" id="proj-${p.id}">
+  const doneL=[...p.done, ...p.remaining.filter(r=>S.done[r.id]).map(r=>r.t)];
+  const remL=p.remaining.filter(r=>!S.done[r.id]).map(r=>r.t);
+  return `<details class="card pcard" id="proj-${p.id}">
     <summary>
-      <div class="prow"><h2 style="margin:0">${p.emoji} ${esc(p.name)}</h2>
-      ${p.deadlineLabel?`<span class="due-pill">${esc(p.deadlineLabel)}</span>`:""}</div>
-      <div class="ptag" style="margin-top:2px">${esc(p.tagline)}</div>
+      <div class="prow"><h3>${p.emoji} ${esc(p.name)}</h3>${p.deadlineLabel?`<span class="due-pill">${esc(p.deadlineLabel)}</span>`:""}</div>
+      <div class="ptag">${esc(p.tagline)}</div>
       ${journeyHTML(p)}
-      <div class="meter small" style="margin-top:8px"><i style="width:${pct}%"></i></div>
-      <div class="pctline"><span><b>${pct}%</b> complete</span><span>${remainList.length?`${remainList.length} step${remainList.length===1?"":"s"} to go`:"complete 🎉"}</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="barline"><span><b>${pct}%</b> complete</span><span style="color:var(--muted)">${remL.length?`${remL.length} step${remL.length===1?"":"s"} to go`:"complete 🎉"}</span></div>
     </summary>
     <div class="cols">
-      <div><h3 style="color:var(--good)">What's finished</h3>
-        ${doneList.length?`<ul class="checklist donels">${doneList.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:`<div style="font-size:13px;color:var(--muted)">The first step is still ahead — that's fine.</div>`}</div>
-      <div><h3>What remains</h3>
-        ${remainList.length?`<ul class="checklist remainls">${remainList.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:`<div style="font-size:13px;color:var(--muted)">Nothing. This one's done. 🎉</div>`}</div>
+      <div><div class="colh" style="color:var(--green-deep)">What's finished</div>
+        ${doneL.length?`<ul class="checklist donels">${doneL.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:`<div style="font-size:13px;color:var(--muted)">The first step is still ahead — that's fine.</div>`}</div>
+      <div><div class="colh">What remains</div>
+        ${remL.length?`<ul class="checklist remainls">${remL.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:`<div style="font-size:13px;color:var(--muted)">Nothing. This one's done. 🎉</div>`}</div>
     </div>
     <div class="cheer">${esc(p.cheer)}</div>
-    <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap">
-      <a class="boardlink" href="${p.board}" target="_blank" rel="noopener">Open Trello board ↗</a>
-      ${(p.links||[]).map(l=>`<a class="boardlink" href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])} ↗</a>`).join("")}
-    </div>
+    <div class="plinks"><a href="${p.board}" target="_blank" rel="noopener">Open Trello board ↗</a>
+      ${(p.links||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])} ↗</a>`).join("")}</div>
   </details>`;
 }
 
@@ -616,125 +783,191 @@ function renderProjects(){
   const v=$("#view-projects");
   const cats=[
     ["focus","🔥 Current focus","Your Big 3 — where the energy goes"],
-    ["next","📌 Next up","Queued on purpose — not a fourth active project"],
-    ["maintain","🌱 Maintain","Light touch: keep alive, don't grow (≈1 hour a week each)"],
-    ["parked","🧊 Later — parked on purpose","Parked isn't failed. Six ideas resting here is what lets three move. Revisit 30 Nov"]
+    ["next","📌 Next up","Queued on purpose"],
+    ["maintain","🌱 Maintain","Keep alive, don't grow (≈1 h a week each)"],
+    ["parked","🧊 Later — parked on purpose","Six ideas resting is what lets three move · revisit 30 Nov"]
   ];
   v.innerHTML=cats.map(([cat,title,note])=>{
     const list=PROJECTS.filter(p=>p.cat===cat);
-    return `<div class="cat-head"><h2>${title}</h2><span class="cnote">${note}</span></div>
-      <div class="grid">${list.map(projCardHTML).join("")}</div>`;
+    return `<div class="sect"><h2>${title}</h2><span class="cnote">${note}</span></div>${list.map(projCardHTML).join("")}`;
   }).join("");
 }
 
-/* ============ rhythm ============ */
-function renderRhythm(){
-  const v=$("#view-rhythm");
+/* ---- schedule ---- */
+function renderSchedule(){
+  const v=$("#view-schedule");
   const mins=NOW.getHours()*60+NOW.getMinutes();
-  const isWd=DOW>=1&&DOW<=5;
-  const toMin=s=>+s.slice(0,2)*60 + +s.slice(3,5);
-  let blocks=[...RHYTHM_WEEKDAY];
-  if(DOW===1) blocks.splice(2,0,["09:20","09:45","🗓️ Weekly plan","Set the week's five — five, not six"]);
-  if(DOW===5) blocks.push(["17:00","18:00","🔎 Weekly review","Read Done first — you did more than you think"]);
+  const plan=todaysPlan();
+  const planHTML = plan? plan.map(b=>{
+      const now=mins>=toMin(b[0])&&mins<toMin(b[1]);
+      const past=mins>=toMin(b[1]);
+      return `<div class="tlrow ${now?"nowrow":""}"><div class="tltime">${b[0]}</div>
+        <div class="tldotcol"><div class="tldot ${past||now?"d-"+b[4]:"d-gray"}"></div><div class="tlline"></div></div>
+        <div><div class="tlt">${esc(b[2])}${now?" · now":""}</div><div class="tls">${esc(b[3])}</div></div></div>`;
+    }).join("")
+    : `<div class="cheer">Sunday — church and rest. No plan needed today. 🌿</div>`;
+  const wd=PLAN_WEEKDAY.map(b=>`<div class="tlrow"><div class="tltime">${b[0]}</div>
+      <div class="tldotcol"><div class="tldot d-${b[4]}"></div><div class="tlline"></div></div>
+      <div><div class="tlt">${esc(b[2])}</div><div class="tls">${esc(b[3])}</div></div></div>`).join("");
   v.innerHTML=`
-    <div class="grid two">
-      <div class="card">
-        <h3>${isWd?"Today's rhythm":"The weekday rhythm (Mon–Fri)"}</h3>
-        ${blocks.map(b=>{
-          const now=isWd&&mins>=toMin(b[0])&&mins<toMin(b[1]);
-          return `<div class="rblock ${now?"now":""}"><div class="rtime">${b[0]} – ${b[1]}</div>
-            <div><div class="rname">${b[2]}${now?'<span class="nowchip">now</span>':""}</div>
-            <div class="rnote">${esc(b[3])}</div></div></div>`;
-        }).join("")}
-        <div class="cheer">Mornings are for people and money. Afternoons are for building — and the code doesn't get to eat the morning, however tempting.</div>
-      </div>
-      <div class="card">
-        <h3>The week at a glance</h3>
-        <table class="week">${WEEK_GLANCE.map(w=>`<tr><td>${w[0]}</td><td>${esc(w[1])}</td></tr>`).join("")}</table>
-        <div class="cheer" style="margin-top:14px">⭐ Friday 17:00 — the weekly review. If you keep only one habit, keep this one.</div>
-      </div>
-    </div>`;
+    <div class="card"><div class="cardhead"><span class="eyebrow">Today's plan</span></div><div class="tl">${planHTML}</div>
+      ${DOW>=1&&DOW<=5?`<div class="cheer">Mornings are for people and money. Afternoons are for building — the code doesn't get to eat the morning.</div>`:""}</div>
+    ${DOW===6||DOW===0?`<div class="card"><div class="cardhead"><span class="eyebrow">The weekday rhythm (Mon–Fri)</span></div><div class="tl">${wd}</div></div>`:""}
+    <div class="card"><div class="cardhead"><span class="eyebrow">The week at a glance</span></div>
+      <table class="week">${WEEK_GLANCE.map(w=>`<tr><td>${w[0]}</td><td>${esc(w[1])}</td></tr>`).join("")}</table>
+      <div class="cheer">⭐ Friday 17:00 — the weekly review. If you keep only one habit, keep this one.</div></div>`;
 }
 
-/* ============ wins ============ */
-function renderWins(){
-  const v=$("#view-wins");
+/* ---- profile ---- */
+function renderProfile(){
+  const v=$("#view-profile");
+  const inMotion=PROJECTS.filter(p=>p.cat==="focus"||p.cat==="next").length;
+  const parked=PROJECTS.filter(p=>p.cat==="parked").length;
+
+  const monday=new Date(NOW); monday.setDate(NOW.getDate()-((DOW+6)%7));
+  const labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const vals=labels.map((_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); return S.history[dayKey(d)]||0; });
+  const max=Math.max(3,...vals);
+  const W=520,H=170,pad=24,step=(W-pad*2)/7,bw=Math.floor(step*0.5);
+  const bars=vals.map((n,i)=>{
+    const hh=n?Math.max(6,Math.round((H-56)*n/max)):0;
+    const x=pad+step*i+(step-bw)/2, y=H-32-hh;
+    return `${n?`<rect x="${x}" y="${y}" width="${bw}" height="${hh}" rx="4" fill="var(--green)"></rect>
+      <text class="val" x="${x+bw/2}" y="${y-7}" text-anchor="middle">${n}</text>`:""}
+      <text x="${x+bw/2}" y="${H-12}" text-anchor="middle">${labels[i]}</text>`;
+  }).join("");
+  const weekSum=vals.reduce((a,b)=>a+b,0);
+
   const unlockedHTML=UNLOCKS.map(u=>{
     const got=!!S.unlocked[u[0]];
     return `<div class="win ${got?"":"locked"}"><div class="wicon">${got?u[1]:"🔒"}</div>
       <div><div class="wt">${esc(u[2])}</div><div class="wd">${got?"Unlocked "+S.unlocked[u[0]]:esc(u[3])}</div></div></div>`;
   }).join("");
+
   v.innerHTML=`
-    <div class="card" style="margin-bottom:18px">
-      <h2>Already on the wall 🏆</h2>
-      <div class="ptag">You move fast and forget what you've shipped — this list is the correction. Read it whenever a good month feels like a bad one.</div>
+    <div class="profilehead"><div class="bigavatar">K</div>
+      <div><div class="pn">Kevin Israel</div><div class="pe">Founder, Isra Digital · Manchester</div></div></div>
+    <div class="tiles" style="grid-template-columns:repeat(2,1fr)">
+      <div class="tile"><div class="tnum">${totalDone()}</div><div class="tlab">tasks completed in Daybreak</div></div>
+      <div class="tile"><div class="tnum">${WINS.length+Object.keys(S.unlocked).length}</div><div class="tlab">wins on the wall</div></div>
+      <div class="tile"><div class="tnum">${inMotion}</div><div class="tlab">projects in motion (by design)</div></div>
+      <div class="tile"><div class="tnum">${parked}</div><div class="tlab">parked on purpose</div></div>
     </div>
+    <div class="card"><div class="cardhead"><span class="eyebrow">This week</span></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Tasks completed each day — every bar is a day you showed up.</div>
+      <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tasks completed per day this week">
+        <line x1="${pad}" y1="${H-32}" x2="${W-pad}" y2="${H-32}" stroke="var(--line)"></line>${bars}</svg></div>
+      ${weekSum?`<div class="cheer">${weekSum} task${weekSum===1?"":"s"} this week. Progress you can point at.</div>`
+        :`<div class="cheer">The chart starts drawing itself with your first task. No pressure — just a pencil waiting. ✏️</div>`}</div>
+    <div class="card"><div class="cardhead"><span class="eyebrow">Where every project stands</span></div>
+      ${PROJECTS.filter(p=>p.cat!=="parked").map(p=>{const pct=projProgress(p);
+        return `<div style="margin-top:12px"><div class="barline" style="margin:0 0 5px"><span><b style="font-size:13px">${p.emoji} ${esc(p.name)}</b></span><span>${pct}%</span></div>
+        <div class="bar" style="margin:0;height:7px"><i style="width:${pct}%"></i></div></div>`;}).join("")}
+      <div class="cheer">Percentages only ever move one way here: forward.</div></div>
+    <div class="sect"><h2>🏆 Already on the wall</h2><span class="cnote">Read this when a good month feels like a bad one</span></div>
     <div class="wins-grid">${WINS.map(w=>`<div class="win"><div class="wicon">${w[0]}</div>
       <div><div class="wt">${esc(w[1])}</div><div class="wd">${esc(w[2])}</div></div></div>`).join("")}</div>
-    <div class="cat-head"><h2>Unlockable</h2><span class="cnote">Earned as you use Daybreak</span></div>
+    <div class="sect"><h2>Unlockable</h2><span class="cnote">Earned as you use Daybreak</span></div>
     <div class="wins-grid">${unlockedHTML}</div>`;
 }
 
-/* ============ progress ============ */
-function renderProgress(){
-  const v=$("#view-progress");
-  const inMotion=PROJECTS.filter(p=>p.cat==="focus"||p.cat==="next").length;
-  const parked=PROJECTS.filter(p=>p.cat==="parked").length;
-  const days=Object.keys(S.history).filter(k=>S.history[k]>0).length;
-
-  // this week's Mon–Sun
-  const monday=new Date(NOW); monday.setDate(NOW.getDate()-((DOW+6)%7));
-  const labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  const vals=labels.map((_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); return S.history[dayKey(d)]||0; });
-  const max=Math.max(3,...vals);
-  const W=560,H=180,pad=26,bw=Math.floor((W-pad*2)/7*0.52),step=(W-pad*2)/7;
-  const bars=vals.map((n,i)=>{
-    const h=n?Math.max(6,Math.round((H-58)*n/max)):0;
-    const x=pad+step*i+(step-bw)/2, y=H-34-h;
-    return `${n?`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="4" fill="var(--gold-bar)"></rect>
-      <text class="val" x="${x+bw/2}" y="${y-7}" text-anchor="middle">${n}</text>`:""}
-      <text x="${x+bw/2}" y="${H-14}" text-anchor="middle">${labels[i]}</text>`;
-  }).join("");
-  v.innerHTML=`
-    <div class="tiles">
-      <div class="tile"><div class="num">${totalDone()}</div><div class="lab">tasks completed in Daybreak</div></div>
-      <div class="tile"><div class="num">${WINS.length+Object.keys(S.unlocked).length}</div><div class="lab">wins on the wall</div></div>
-      <div class="tile"><div class="num">${inMotion}</div><div class="lab">projects in motion (by design)</div></div>
-      <div class="tile"><div class="num">${parked}</div><div class="lab">parked on purpose — costing you nothing</div></div>
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h2>This week</h2>
-      <div class="ptag">Tasks completed each day — every bar is a day you showed up.</div>
-      <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tasks completed per day this week">
-        <line x1="${pad}" y1="${H-34}" x2="${W-pad}" y2="${H-34}" stroke="var(--line)"></line>${bars}</svg></div>
-      ${vals.every(n=>!n)?`<div class="cheer">The chart starts drawing itself the moment you tick your first task. No pressure — just a pencil waiting. ✏️</div>`
-        :`<div class="cheer">${vals.reduce((a,b)=>a+b,0)} task${vals.reduce((a,b)=>a+b,0)===1?"":"s"} this week. Progress you can point at.</div>`}
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h2>Where every project stands</h2>
-      ${PROJECTS.filter(p=>p.cat!=="parked").map(p=>{const pct=projProgress(p);
-        return `<div style="margin-top:14px"><div class="pctline" style="margin:0 0 5px"><span><b style="font-size:13.5px">${p.emoji} ${esc(p.name)}</b></span><span>${pct}%</span></div>
-        <div class="meter small"><i style="width:${pct}%"></i></div></div>`;}).join("")}
-      <div class="cheer">Percentages only ever move one way here: forward.</div>
-    </div>`;
+/* ============ interactions ============ */
+function bindCommon(root){
+  root.querySelectorAll(".tick").forEach(b=>b.addEventListener("click",()=>toggleTask(b.dataset.task)));
+  root.querySelectorAll("[data-goview]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.goview)));
+  root.querySelectorAll("[data-goproj]").forEach(b=>b.addEventListener("click",()=>{go("projects");
+    const d=document.getElementById("proj-"+b.dataset.goproj); if(d){d.open=true;d.scrollIntoView({behavior:"smooth",block:"start"});}}));
+  root.querySelectorAll("[data-scroll]").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById(b.dataset.scroll);t&&t.scrollIntoView({behavior:"smooth",block:"start"});}));
 }
 
-/* ============ nav / toast / confetti ============ */
-document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+function toggleTask(id){
+  const was=!!S.done[id];
+  if(was){ delete S.done[id]; S.history[TODAY]=Math.max(0,(S.history[TODAY]||0)-1); }
+  else{ S.done[id]=TODAY; S.history[TODAY]=(S.history[TODAY]||0)+1; celebrate(id); }
+  save(); renderAll();
+}
+
+function celebrate(id){
+  const f=findTask(id);
+  const msgs=[CHEERS[Math.floor(Math.random()*CHEERS.length)]];
+  if(f&&f.p) msgs.push(`${f.p.emoji} ${f.p.name.split("—")[0].trim()} is now ${projProgress(f.p)}% along.`);
+  if((S.history[TODAY]||0)===3) msgs.push("Three today — that's a full day. 🌟");
+  toast(msgs.join("  "));
+  confetti();
+  checkUnlocks(f);
+}
+
+function checkUnlocks(f){
+  const t=totalDone(); const dt=S.history[TODAY]||0;
+  const won=[];
+  const un=(k,c)=>{ if(c&&!S.unlocked[k]){S.unlocked[k]=TODAY;won.push(k);} };
+  un("first",t>=1); un("three",dt>=3); un("five",t>=5); un("ten",t>=10); un("streak3",streak()>=3);
+  un("projdone", f && f.p && projProgress(f.p)===100);
+  if(won.length){ const u=UNLOCKS.find(x=>x[0]===won[0]); setTimeout(()=>toast(`🏆 Achievement: ${u[2]}!`),1700); }
+  save();
+}
+
+/* nav */
+function go(view){
+  document.querySelectorAll(".navbtn").forEach(x=>x.setAttribute("aria-selected",x.dataset.view===view));
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  $("#view-"+t.dataset.view).classList.add("active");
-}));
+  $("#view-"+view).classList.add("active");
+  window.scrollTo({top:0});
+}
+document.querySelectorAll(".navbtn").forEach(t=>t.addEventListener("click",()=>go(t.dataset.view)));
+
+/* new-task sheet */
+$("#fabbtn").addEventListener("click",()=>{
+  const root=$("#modalroot");
+  root.innerHTML=`<div class="overlay" id="ov"><div class="sheet" role="dialog" aria-label="New task">
+    <h2>Add a task for today</h2>
+    <div class="sub">Something small counts. It all goes on the same wall.</div>
+    <input id="ntitle" placeholder="What would you like to get done?" maxlength="120" autofocus>
+    <select id="nproj"><option value="">No project (personal)</option>
+      ${PROJECTS.filter(p=>p.cat!=="parked").map(p=>`<option value="${esc(p.name.split("—")[0].trim())}">${p.emoji} ${esc(p.name)}</option>`).join("")}</select>
+    <button class="primarybtn" id="naddbtn">Add task</button>
+  </div></div>`;
+  const close=()=>root.innerHTML="";
+  $("#ov").addEventListener("click",e=>{ if(e.target.id==="ov") close(); });
+  $("#naddbtn").addEventListener("click",()=>{
+    const t=$("#ntitle").value.trim(); if(!t){$("#ntitle").focus();return;}
+    S.custom.push({id:"c"+Date.now(),t,proj:$("#nproj").value||"",day:TODAY});
+    save(); close(); renderAll(); toast("Added. One clear next step. ✨");
+  });
+  $("#ntitle").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#naddbtn").click(); });
+  $("#ntitle").focus();
+});
+
+/* menu + bell */
+$("#menubtn").addEventListener("click",()=>{
+  const root=$("#modalroot");
+  root.innerHTML=`<div class="overlay" id="ov"><div class="sheet" role="dialog" aria-label="Menu">
+    <h2>Your boards</h2><div class="sub">Daybreak reads from these — they stay the source of truth.</div>
+    <div class="menu">
+      <a href="${BOARDS.lifeos}" target="_blank" rel="noopener">🧭 Life OS — Kevin <span>the board above all boards</span></a>
+      <a href="${BOARDS.isra}" target="_blank" rel="noopener">💷 Isra Digital — Command <span>business HQ</span></a>
+      <a href="${BOARDS.loveworld}" target="_blank" rel="noopener">🌐 LoveWorld Starlight <span>client</span></a>
+      <a href="${BOARDS.elson}" target="_blank" rel="noopener">🧾 Elson — Website <span>client</span></a>
+      <a href="${BOARDS.prayer}" target="_blank" rel="noopener">🙏 Prayer Buddy <span>product</span></a>
+      <a href="${BOARDS.regal}" target="_blank" rel="noopener">💇 Regal Studio <span>brand</span></a>
+    </div></div></div>`;
+  $("#ov").addEventListener("click",e=>{ if(e.target.id==="ov") $("#modalroot").innerHTML=""; });
+});
+$("#bellbtn").addEventListener("click",()=>{
+  const {open}=todaysTasks();
+  $("#belldot").style.display="none";
+  toast(open.length?`Gentle nudge: ${open.length} task${open.length===1?"":"s"} would love a little attention today. 💛`:"You're all caught up. 💛");
+});
 
 let toastTimer;
 function toast(msg){ const el=$("#toast"); el.textContent=msg; el.classList.add("show");
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3200); }
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3400); }
 
 function confetti(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const c=$("#confetti"),x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
-  const cols=["#C29A34","#E0B45C","#3E7C4F","#8B84C9","#D96C4F"];
+  const cols=["#16A34A","#34C97A","#F59E0B","#8B5CF6","#2563EB"];
   const ps=Array.from({length:70},()=>({x:innerWidth/2+(Math.random()-.5)*160,y:innerHeight*0.62,
     vx:(Math.random()-.5)*9,vy:-5-Math.random()*7,r:3+Math.random()*4,c:cols[Math.random()*cols.length|0],a:1,rot:Math.random()*6}));
   let n=0;
@@ -745,7 +978,8 @@ function confetti(){
   })();
 }
 
-function renderAll(){ renderHeader(); renderToday(); renderProjects(); renderRhythm(); renderWins(); renderProgress(); }
+function renderAll(){ renderHome(); renderProjects(); renderSchedule(); renderProfile();
+  document.querySelectorAll("#view-projects,#view-schedule,#view-profile").forEach(bindCommon); }
 renderAll();
 </script>
 

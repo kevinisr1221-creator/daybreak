@@ -235,7 +235,46 @@
   .bigavatar{width:58px;height:58px;border-radius:50%;background:var(--green);color:#fff;font-weight:800;font-size:23px;display:grid;place-items:center}
   .profilehead .pn{font-size:18px;font-weight:800}
   .profilehead .pe{font-size:13px;color:var(--muted)}
-</style>
+
+  /* ========== ENHANCED FEATURES V2 ========== */
+  
+  /* Search Bar */
+  .search-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+  .search-bar input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;color:var(--ink);font:inherit}
+  .search-bar input::placeholder{color:var(--muted)}
+  .search-bar button{width:40px;height:40px;border-radius:12px;background:var(--blue);color:white;display:grid;place-items:center}
+  
+  /* Modal Overlay */
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;z-index:1000;align-items:center;justify-content:center}
+  .modal-overlay.show{display:flex}
+  .modal-content{background:var(--card);border-radius:24px;padding:24px;max-width:90%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .modal-header h2{margin:0;font-size:24px}
+  .modal-close{width:32px;height:32px;border-radius:50%;background:var(--line);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+  
+  /* Task with Deadline */
+  .task-deadline{font-size:12px;color:var(--muted);margin-top:4px}
+  .deadline-overdue{color:#EF4444}
+  .deadline-soon{color:var(--orange)}
+  .deadline-ok{color:var(--green)}
+  
+  /* Export Button */
+  .export-btn{margin-top:14px;padding:10px 14px;background:var(--blue-soft);color:var(--blue);border-radius:12px;font-weight:600;text-align:center;cursor:pointer;display:inline-block}
+  .export-btn:hover{background:var(--blue);color:white}
+  
+  /* Calendar Heatmap Preview */
+  .heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+  .heatday{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:600}
+  .heat-0{background:var(--line);color:var(--muted)}
+  .heat-1{background:var(--green-tint);color:var(--green)}
+  .heat-2{background:var(--green-soft);color:var(--green-deep)}
+  .heat-3{background:var(--green);color:white}
+  
+  /* Shortcuts Help */
+  .shortcuts-modal .shortcut-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .shortcut-row kbd{background:var(--line);padding:2px 6px;border-radius:4px;font-family:monospace}
+
+  </style>
 
 <div class="app">
   <div class="topbar">
@@ -787,10 +826,34 @@ function renderProjects(){
     ["maintain","🌱 Maintain","Keep alive, don't grow (≈1 h a week each)"],
     ["parked","🧊 Later — parked on purpose","Six ideas resting is what lets three move · revisit 30 Nov"]
   ];
-  v.innerHTML=cats.map(([cat,title,note])=>{
-    const list=PROJECTS.filter(p=>p.cat===cat);
-    return `<div class="sect"><h2>${title}</h2><span class="cnote">${note}</span></div>${list.map(projCardHTML).join("")}`;
-  }).join("");
+
+  // Search bar
+  let searchHTML = `
+    <div class="search-bar" style="margin-bottom:16px">
+      <input type="text" id="projsearch" placeholder="Find project..." oninput="filterProjects(this.value)">
+      <button onclick="document.getElementById('projsearch').value='';filterProjects('')">✕</button>
+    </div>
+  `;
+
+  // Filter projects by search
+  let filtered = searchQuery ? PROJECTS.filter(p =>
+    p.name.toLowerCase().includes(searchQuery) ||
+    p.tagline.toLowerCase().includes(searchQuery) ||
+    p.emoji.includes(searchQuery)
+  ) : null;
+
+  let content = searchQuery
+    ? `<div class="sect"><h2>Search Results</h2><span class="cnote">${filtered.length} project${filtered.length!==1?'s':''}</span></div>
+       ${filtered.map(p => `<div onclick="showProjectModal('${p.id}')" style="cursor:pointer">${projCardHTML(p)}</div>`).join('')}`
+    : cats.map(([cat,title,note])=>{
+      const list=PROJECTS.filter(p=>p.cat===cat);
+      return `<div class="sect"><h2>${title}</h2><span class="cnote">${note}</span></div>${list.map(p =>
+        `<div onclick="showProjectModal('${p.id}')" style="cursor:pointer">${projCardHTML(p)}</div>`
+      ).join("")}`;
+    }).join("");
+
+  v.innerHTML = searchHTML + content;
+  document.getElementById('projsearch').focus();
 }
 
 /* ---- schedule ---- */
@@ -868,7 +931,12 @@ function renderProfile(){
     <div class="wins-grid">${WINS.map(w=>`<div class="win"><div class="wicon">${w[0]}</div>
       <div><div class="wt">${esc(w[1])}</div><div class="wd">${esc(w[2])}</div></div></div>`).join("")}</div>
     <div class="sect"><h2>Unlockable</h2><span class="cnote">Earned as you use Daybreak</span></div>
-    <div class="wins-grid">${unlockedHTML}</div>`;
+    <div class="wins-grid">${unlockedHTML}</div>
+    <div class="sect"><h2>⚙️ Data</h2><span class="cnote">Back up and restore your progress</span></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="export-btn" onclick="exportState()" style="background:var(--green-soft);color:var(--green)">📥 Export Backup</div>
+      <div class="export-btn" onclick="importState()" style="background:var(--blue-soft);color:var(--blue)">📤 Import Backup</div>
+    </div>`;
 }
 
 /* ============ interactions ============ */
@@ -978,9 +1046,195 @@ function confetti(){
   })();
 }
 
+
+// ========== ENHANCED FEATURES V2 ==========
+
+// Search/Filter
+let searchQuery = '';
+function filterProjects(query){
+  searchQuery = query.toLowerCase();
+  renderProjects();
+}
+
+// Deadline utilities
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  const target = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const days = Math.ceil((target - today)/(1000*60*60*24));
+  return days;
+}
+
+function deadlineStatus(dateStr){
+  const days = daysUntil(dateStr);
+  if(days === null) return null;
+  if(days < 0) return {label:'OVERDUE',class:'deadline-overdue'};
+  if(days === 0) return {label:'Today',class:'deadline-soon'};
+  if(days <= 3) return {label:`${days}d left`,class:'deadline-soon'};
+  return {label:`${days}d`,class:'deadline-ok'};
+}
+
+// Modal system
+function showProjectModal(projId){
+  const p = PROJECTS.find(x => x.id === projId);
+  if(!p) return;
+  
+  let html = `<div class="modal-overlay show" id="projmodal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>${p.emoji} ${p.name}</h2>
+        <div class="modal-close" onclick="closeModal()">✕</div>
+      </div>
+      <p class="tagline">${p.tagline}</p>
+      <div style="margin-top:16px">
+        <strong style="color:var(--muted);font-size:12px">PROGRESS</strong>
+        <div class="bar" style="margin:8px 0">
+          <i style="width:${projProgress(p)*100}%"></i>
+        </div>
+        <div class="barline">
+          <span>${p.done.length} done</span>
+          <b>${(projProgress(p)*100).toFixed(0)}%</b>
+          <span>${p.remaining.length} left</span>
+        </div>
+      </div>
+      
+      <div style="margin-top:20px">
+        <strong style="color:var(--muted);font-size:12px">REMAINING TASKS</strong>
+        ${p.remaining.map(t => `
+          <div style="padding:10px;background:var(--bg);border-radius:8px;margin-top:8px;font-size:13px">
+            <input type="checkbox" class="tick" data-task="${t.id}" onchange="toggleTask('${t.id}');closeModal()"> ${t.t}
+          </div>
+        `).join('')}
+      </div>
+      
+      ${p.deadline ? `
+        <div style="margin-top:16px;padding:12px;background:var(--orange-soft);border-radius:12px">
+          <strong style="color:var(--orange)">Deadline: ${p.deadlineLabel}</strong>
+        </div>
+      ` : ''}
+      
+      <div style="margin-top:20px">
+        <a href="${p.board}" target="_blank" style="display:inline-block;padding:10px 14px;background:var(--blue);color:white;border-radius:8px;text-decoration:none">Open Trello Board ↗</a>
+      </div>
+    </div>
+  </div>`;
+  
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.getElementById('projmodal').addEventListener('click', e => {
+    if(e.target.id === 'projmodal') closeModal();
+  });
+}
+
+function closeModal(){
+  const m = document.getElementById('projmodal');
+  if(m) m.remove();
+}
+
+// Export/Import
+function exportState(){
+  const data = {
+    exported: new Date().toISOString(),
+    state: S,
+    projects: PROJECTS
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `daybreak-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 Backup downloaded');
+}
+
+function importState(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const data = JSON.parse(event.target.result);
+        S = data.state || {};
+        save();
+        renderAll();
+        toast('📤 Backup restored');
+      } catch(err) {
+        toast('❌ Invalid backup file');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// Keyboard shortcuts
+function initKeyboardShortcuts(){
+  document.addEventListener('keydown', e => {
+    if(e.target !== document.body) return; // Don't trigger in inputs
+    
+    const key = e.key.toLowerCase();
+    
+    if(key === 'j') { go('projects'); e.preventDefault(); toast('Jump to Projects'); }
+    else if(key === '+' || key === '=') { 
+      e.preventDefault();
+      document.getElementById('naddbtn')?.click();
+      toast('New task');
+    }
+    else if(key === 'n') {
+      e.preventDefault();
+      toast('⌨️  n: new project (coming soon)');
+    }
+    else if(key === '?') {
+      e.preventDefault();
+      showShortcutsHelp();
+    }
+    else if(key === 'escape') {
+      closeModal();
+      e.preventDefault();
+    }
+  });
+}
+
+function showShortcutsHelp(){
+  const html = `<div class="modal-overlay show" id="helpmodal">
+    <div class="modal-content shortcuts-modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2>⌨️  Keyboard Shortcuts</h2>
+        <div class="modal-close" onclick="closeModal()">✕</div>
+      </div>
+      <div class="shortcut-row">
+        <span><kbd>J</kbd> Jump to Projects</span>
+      </div>
+      <div class="shortcut-row">
+        <span><kbd>+</kbd> New Task</span>
+      </div>
+      <div class="shortcut-row">
+        <span><kbd>N</kbd> New Project</span>
+      </div>
+      <div class="shortcut-row">
+        <span><kbd>?</kbd> This help</span>
+      </div>
+      <div class="shortcut-row">
+        <span><kbd>Esc</kbd> Close modal</span>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.getElementById('helpmodal').addEventListener('click', e => {
+    if(e.target.id === 'helpmodal') closeModal();
+  });
+}
+
+
 function renderAll(){ renderHome(); renderProjects(); renderSchedule(); renderProfile();
   document.querySelectorAll("#view-projects,#view-schedule,#view-profile").forEach(bindCommon); }
 renderAll();
+initKeyboardShortcuts();
 </script>
 
 </body>

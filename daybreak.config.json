@@ -1,0 +1,217 @@
+{
+  "board": "HEGufcHJ",
+  "listTiers": {
+    "Active — Big 3": "focus",
+    "Inbox": "next",
+    "Maintain": "maintain",
+    "Parked": "parked"
+  },
+  "weekListMatch": "This Week",
+  "doneListMatch": "Done",
+  "defaults": {
+    "emoji": "📌",
+    "stages": [
+      "Planning",
+      "Building",
+      "Shipping",
+      "Done"
+    ],
+    "tagline": "Pulled in from Trello — add a line in daybreak.config.json.",
+    "cheer": "New here. Give it one small step and it stops being new."
+  },
+  "curated": {
+    "tls-festival-weekend": {
+      "id": "tls",
+      "emoji": "🎪",
+      "tagline": "Three nights, 28–30 Aug · £0 budget",
+      "stages": [
+        "Planning",
+        "Promotion",
+        "Festival Live",
+        "Wrap-up"
+      ],
+      "cheer": "Everything you prepped is live right now. Fri: Dance Night 19:00 · Sat: The Money Crusade 16:00 · Sun: The Glory of His Presence 16:00."
+    },
+    "isra-digital-money-in-the-door": {
+      "id": "isra",
+      "emoji": "💷",
+      "tagline": "Not “build the company” — revenue that actually arrives",
+      "stages": [
+        "Set up",
+        "First clients",
+        "Recurring",
+        "Salary"
+      ],
+      "cheer": "The retainer is already agreed in principle — naming the price is the only thing between you and recurring income."
+    },
+    "young-life-vision-workshop": {
+      "id": "ylv",
+      "emoji": "🎓",
+      "tagline": "App Development & Digital Innovation — teaching in Salford",
+      "stages": [
+        "Agree scope",
+        "Prep",
+        "Sessions",
+        "Complete"
+      ],
+      "cheer": "This puts you in a room teaching — which feeds everything else you're building."
+    },
+    "clipping-business": {
+      "id": "clip",
+      "emoji": "✂️",
+      "tagline": "Takes slot 1 on Mon 31 Aug — launch sequence ready",
+      "stages": [
+        "Agree",
+        "Proof",
+        "Sell",
+        "Systemise"
+      ],
+      "cheer": "Queued on purpose — it gets your full attention the moment the festival wraps."
+    },
+    "church-social-media-team": {
+      "id": "church",
+      "emoji": "⛪",
+      "tagline": "Your seat: Lead. Build the team, don't be the team",
+      "stages": [
+        "Pack ready",
+        "Meeting",
+        "Running"
+      ],
+      "cheer": "The agenda is already written. You just pick a date and send it."
+    },
+    "isra-digital-ltd-back-office": {
+      "id": "backoffice",
+      "emoji": "🏛️",
+      "tagline": "Small and steady — 30 minutes a week is plenty",
+      "stages": [
+        "Incorporated",
+        "Banking",
+        "Compliant"
+      ],
+      "cheer": "Never zero, never more than 30 minutes. That's the whole rule."
+    },
+    "business-personal-money": {
+      "id": "money",
+      "emoji": "🏦",
+      "tagline": "Finite job — finish it once and it stays fixed",
+      "stages": [
+        "Decided",
+        "Separated",
+        "Habit"
+      ],
+      "cheer": "Money arrives → move the tax share out the same day. One habit carries the rest."
+    },
+    "regal-studio": {
+      "id": "regal",
+      "emoji": "💇",
+      "tagline": "Loc & natural hair brand — one batching session a week",
+      "stages": [
+        "Built",
+        "Launch prep",
+        "Live",
+        "Growing"
+      ],
+      "cheer": "Five small steps from live. Any one of them is a good day's touch."
+    },
+    "prayer-buddy": {
+      "id": "prayer",
+      "emoji": "🙏",
+      "tagline": "Finish the move, then let it rest",
+      "stages": [
+        "Built",
+        "Migration",
+        "Deployed"
+      ],
+      "cheer": "You're one deploy away from calling this chapter closed."
+    },
+    "kaptur": {
+      "id": "kaptur",
+      "emoji": "🎟️",
+      "tagline": "Live at kapturevents.co.uk — keep Rivers of Life running",
+      "stages": [
+        "Built",
+        "Live",
+        "Phase 2"
+      ],
+      "cheer": "A live product with a real organisation on it. That already counts."
+    },
+    "river-of-life-charity-website": {
+      "id": "riverweb",
+      "emoji": "❤️",
+      "tagline": "Built and live for Golda",
+      "stages": [
+        "Built",
+        "Live",
+        "Handed over"
+      ],
+      "cheer": "This might already be a finished project wearing a to-do's clothes."
+    },
+    "lbh-let-s-build-home": {
+      "id": "lbh",
+      "emoji": "🏠",
+      "tagline": "Blocked on one thing: a payout rail into Zimbabwe",
+      "stages": [
+        "Concept",
+        "Blocked",
+        "Buildable",
+        "Live"
+      ],
+      "cheer": "Parked is a decision, not a failure. It costs you nothing until 30 Nov."
+    },
+    "dev-pool": {
+      "id": "devpool",
+      "emoji": "👥",
+      "tagline": "The plan exists — what it needs is a signed client",
+      "stages": [
+        "Planned",
+        "Leads warm",
+        "First client"
+      ],
+      "cheer": "You're not short of plan. Keep the leads warm and let it wait."
+    },
+    "sammie-s-app": {
+      "id": "sammie",
+      "emoji": "📱",
+      "tagline": "Concept, research and brief all done",
+      "stages": [
+        "Brief done",
+        "Waiting",
+        "Build"
+      ],
+      "cheer": "The thinking is done. It's waiting on a commitment that isn't yours to make."
+    },
+    "4-person-marketing-agency": {
+      "id": "agency",
+      "emoji": "🎬",
+      "tagline": "You, Nathan, Favour, Gianluca — structure written 16 Aug",
+      "stages": [
+        "Planned",
+        "Parked",
+        "Decided"
+      ],
+      "cheer": "One clear question stands between this and a decision."
+    },
+    "northstar-ventures": {
+      "id": "northstar",
+      "emoji": "⭐",
+      "tagline": "Venture studio, 50/50 with Yemi — agreement drafted",
+      "stages": [
+        "Framed",
+        "Parked",
+        "Aligned"
+      ],
+      "cheer": "The next step is a conversation, not a build. It'll keep."
+    },
+    "isr-trading-academy": {
+      "id": "isrta",
+      "emoji": "📈",
+      "tagline": "Live at isrtradingacademy.com and feature-rich already",
+      "stages": [
+        "Built",
+        "Live",
+        "Growing"
+      ],
+      "cheer": "It doesn't need more features. It needs eyes — and that can wait for its slot."
+    }
+  }
+}

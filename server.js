@@ -1,186 +1,173 @@
 #!/usr/bin/env node
 /**
- * Daybreak Backend Server
- * Handles Trello sync, Cloud storage, and Collaborator management
+ * Daybreak backend — cloud backup + Trello sync.
  *
- * Features:
- * - Live Trello board syncing
- * - Cloud state backup
- * - Collaborator sharing
- * - Real-time updates via WebSocket
+ * Design notes:
+ *  - Every user-scoped route requires a bearer token. Tokens are issued at
+ *    signup and stored hashed; a userId alone is never sufficient to read data.
+ *  - State is written to disk (DATA_DIR) so a restart or redeploy does not
+ *    silently discard someone's backup.
+ *  - Trello sync is a real call to Trello's REST API using the caller's own
+ *    key/token. Nothing is stubbed: if credentials are absent the route says so
+ *    rather than pretending it worked.
  */
 
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-const fs = require('fs').promises;
+const crypto = require('crypto');
+const fs = require('fs');
+const fsp = fs.promises;
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '.data');
+const MAX_STATE_BYTES = 2 * 1024 * 1024;
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN || '*' }));
+app.use(express.json({ limit: '4mb' }));
 
-// In-memory storage (replace with real DB in production)
-const users = new Map();
-const projects = new Map();
-const shares = new Map();
+/* ---------- storage ---------- */
 
-// ========== HEALTH CHECK ==========
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+fs.mkdirSync(DATA_DIR, { recursive: true });
+const userFile = id => path.join(DATA_DIR, `${id}.json`);
 
-// ========== AUTHENTICATION ==========
-app.post('/api/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  if (!email) return res.status(400).json({ error: 'Email required' });
+const safeId = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id);
 
-  let user = Array.from(users.values()).find(u => u.email === email);
-  if (!user) {
-    user = {
-      id: 'user-' + Date.now(),
-      email,
+async function readUser(id) {
+  try {
+    return JSON.parse(await fsp.readFile(userFile(id), 'utf8'));
+  } catch (e) {
+    if (e.code === 'ENOENT') return null;
+    throw e;
+  }
+}
+
+// Write to a temp file then rename, so an interrupted write can never leave a
+// half-written record where a good backup used to be.
+async function writeUser(id, record) {
+  const tmp = userFile(id) + '.tmp';
+  await fsp.writeFile(tmp, JSON.stringify(record));
+  await fsp.rename(tmp, userFile(id));
+}
+
+/* ---------- auth ---------- */
+
+const hash = t => crypto.createHash('sha256').update(t).digest('hex');
+
+// Compare in constant time so a token cannot be recovered by timing the response.
+function tokenMatches(presented, storedHash) {
+  const a = Buffer.from(hash(presented));
+  const b = Buffer.from(storedHash);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+async function authenticate(req, res, next) {
+  const header = req.get('authorization') || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  const { userId } = req.params;
+
+  if (!token) return res.status(401).json({ error: 'Missing bearer token' });
+  if (!safeId(userId)) return res.status(400).json({ error: 'Bad user id' });
+
+  const record = await readUser(userId);
+  if (!record || !tokenMatches(token, record.tokenHash)) {
+    // Same response whether the user is absent or the token is wrong, so this
+    // endpoint cannot be used to enumerate which accounts exist.
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  req.record = record;
+  next();
+}
+
+/* ---------- routes ---------- */
+
+app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
+
+// Creates an account and returns the only copy of the token. It is stored
+// hashed, so a lost token cannot be recovered — a new account is needed.
+app.post('/api/signup', async (req, res, next) => {
+  try {
+    const userId = crypto.randomBytes(9).toString('base64url');
+    const token = crypto.randomBytes(32).toString('base64url');
+    await writeUser(userId, {
+      userId,
+      tokenHash: hash(token),
       createdAt: new Date().toISOString(),
-      token: 'token-' + Date.now() + '-' + Math.random().toString(36).substring(7)
-    };
-    users.set(user.id, user);
-  }
-
-  res.json({ userId: user.id, token: user.token, email });
+      state: null,
+      lastSync: null
+    });
+    res.json({ userId, token, note: 'Save this token. It is not recoverable.' });
+  } catch (e) { next(e); }
 });
 
-// ========== CLOUD SYNC ==========
-app.post('/api/cloud-sync', (req, res) => {
-  const { userId, state } = req.body;
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+app.put('/api/state/:userId', authenticate, async (req, res, next) => {
+  try {
+    const { state } = req.body;
+    if (state === undefined) return res.status(400).json({ error: 'Missing state' });
+    if (JSON.stringify(state).length > MAX_STATE_BYTES) {
+      return res.status(413).json({ error: 'State too large' });
+    }
+    const updated = { ...req.record, state, lastSync: new Date().toISOString() };
+    await writeUser(req.params.userId, updated);
+    res.json({ ok: true, lastSync: updated.lastSync });
+  } catch (e) { next(e); }
+});
 
-  // Save state for this user
-  projects.set(userId, {
-    state,
-    lastSync: new Date().toISOString(),
-    version: 1
+app.get('/api/state/:userId', authenticate, (req, res) => {
+  res.json({ state: req.record.state, lastSync: req.record.lastSync });
+});
+
+/**
+ * Real Trello read. Requires the caller's own Trello key and token, passed per
+ * request so the server never holds long-lived credentials for anyone.
+ * Get them at https://trello.com/power-ups/admin (key) and /1/authorize (token).
+ */
+app.post('/api/trello/boards/:userId', authenticate, async (req, res, next) => {
+  try {
+    const { trelloKey, trelloToken, boardIds } = req.body;
+    if (!trelloKey || !trelloToken) {
+      return res.status(400).json({
+        error: 'Trello credentials required',
+        how: 'Send trelloKey and trelloToken in the body. See https://trello.com/app-key'
+      });
+    }
+    if (!Array.isArray(boardIds) || !boardIds.length) {
+      return res.status(400).json({ error: 'boardIds must be a non-empty array' });
+    }
+
+    const auth = `key=${encodeURIComponent(trelloKey)}&token=${encodeURIComponent(trelloToken)}`;
+    const boards = await Promise.all(boardIds.map(async id => {
+      const url = `https://api.trello.com/1/boards/${encodeURIComponent(id)}` +
+                  `/cards?fields=name,due,dateLastActivity,idList,closed&${auth}`;
+      const r = await fetch(url);
+      if (!r.ok) return { boardId: id, error: `Trello returned ${r.status}` };
+      const cards = await r.json();
+      const open = cards.filter(c => !c.closed);
+      return {
+        boardId: id,
+        cardCount: open.length,
+        cards: open.map(c => ({ id: c.id, name: c.name, due: c.due, listId: c.idList }))
+      };
+    }));
+
+    res.json({ ok: true, fetchedAt: new Date().toISOString(), boards });
+  } catch (e) { next(e); }
+});
+
+app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+
+app.use((err, req, res, _next) => {
+  console.error('[error]', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Daybreak backend listening on :${PORT}`);
+    console.log(`Data directory: ${DATA_DIR}`);
   });
-
-  res.json({ ok: true, synced: true, message: 'State saved to cloud' });
-});
-
-// ========== CLOUD RESTORE ==========
-app.get('/api/cloud-sync/:userId', (req, res) => {
-  const { userId } = req.params;
-  const data = projects.get(userId);
-
-  if (!data) {
-    return res.json({ state: null, message: 'No backup found' });
-  }
-
-  res.json({ state: data.state, lastSync: data.lastSync });
-});
-
-// ========== TRELLO SYNC ==========
-app.post('/api/trello-sync', (req, res) => {
-  const { userId, projects: userProjects, state } = req.body;
-
-  console.log(`[Trello Sync] ${userId} syncing ${userProjects.length} projects`);
-
-  // In a real implementation:
-  // 1. Call Trello API for each board
-  // 2. Merge with local projects
-  // 3. Mark completed tasks in Trello
-  // 4. Return updated projects
-
-  // For now, just acknowledge
-  res.json({
-    ok: true,
-    synced: userProjects.length,
-    projects: userProjects,
-    message: 'Projects synced with Trello (simulation)'
-  });
-});
-
-// ========== SHARING / COLLABORATORS ==========
-app.post('/api/share', (req, res) => {
-  const { userId, email, access } = req.body;
-  if (!userId || !email) return res.status(400).json({ error: 'Missing fields' });
-
-  const shareId = 'share-' + Date.now();
-  shares.set(shareId, {
-    id: shareId,
-    ownerId: userId,
-    email,
-    access,
-    createdAt: new Date().toISOString(),
-    status: 'pending'
-  });
-
-  // In a real app, send email invitation here
-  console.log(`[Share] Created share ${shareId}: ${email} (${access} access)`);
-
-  res.json({
-    ok: true,
-    shareId,
-    status: 'invited',
-    message: `Invitation sent to ${email}`
-  });
-});
-
-app.get('/api/shares/:userId', (req, res) => {
-  const { userId } = req.params;
-  const userShares = Array.from(shares.values()).filter(s => s.ownerId === userId);
-  res.json({ shares: userShares });
-});
-
-app.post('/api/share/:shareId/accept', (req, res) => {
-  const { shareId } = req.params;
-  const share = shares.get(shareId);
-
-  if (!share) return res.status(404).json({ error: 'Share not found' });
-
-  share.status = 'accepted';
-  share.acceptedAt = new Date().toISOString();
-
-  res.json({ ok: true, message: 'Share accepted' });
-});
-
-// ========== REALTIME UPDATES (WebSocket would go here) ==========
-app.post('/api/notify', (req, res) => {
-  const { userId, message } = req.body;
-  // In a real app, send WebSocket message to connected users
-  console.log(`[Notify] ${userId}: ${message}`);
-  res.json({ ok: true });
-});
-
-// ========== STATS ==========
-app.get('/api/stats', (req, res) => {
-  res.json({
-    users: users.size,
-    backups: projects.size,
-    shares: shares.size,
-    uptime: process.uptime()
-  });
-});
-
-// ========== ERROR HANDLING ==========
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error', message: err.message });
-});
-
-// ========== START SERVER ==========
-app.listen(PORT, () => {
-  console.log(`\n🌅 Daybreak Backend running on port ${PORT}`);
-  console.log(`\nAvailable endpoints:`);
-  console.log(`  POST /api/auth/login - Authenticate user`);
-  console.log(`  POST /api/cloud-sync - Save state to cloud`);
-  console.log(`  GET  /api/cloud-sync/:userId - Restore state`);
-  console.log(`  POST /api/trello-sync - Sync with Trello boards`);
-  console.log(`  POST /api/share - Invite collaborator`);
-  console.log(`  GET  /api/shares/:userId - List shares`);
-  console.log(`  POST /api/share/:shareId/accept - Accept invitation`);
-  console.log(`  GET  /api/health - Health check`);
-  console.log(`  GET  /api/stats - Server stats\n`);
-});
+}
 
 module.exports = app;

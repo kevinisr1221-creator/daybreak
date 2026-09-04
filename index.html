@@ -349,6 +349,59 @@
     .app,nav.bottom,#fabbtn{display:none !important}
   }
 
+  
+  /* ---- habits ---- */
+  .habit{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .habit:last-child{border-bottom:0}
+  .habit .hemoji{font-size:19px;width:26px;text-align:center;flex:none}
+  .habit .hbody{flex:1;min-width:0}
+  .habit .hname{font-size:14px;font-weight:600}
+  .habit.done .hname{color:var(--muted);text-decoration:line-through}
+  .habit .hmeta{font-size:12px;color:var(--muted);margin-top:1px}
+  .habit .hstreak{font-size:11.5px;font-weight:700;color:var(--orange);flex:none}
+  .hbox{width:30px;height:30px;border-radius:9px;border:2px solid var(--line);flex:none;
+    display:grid;place-items:center;color:transparent;font-size:15px;font-weight:800;transition:all .16s}
+  .hbox:hover{border-color:var(--green)}
+  .habit.done .hbox{background:var(--green);border-color:var(--green);color:#fff}
+
+  /* ---- routine calendar ---- */
+  .calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .calhead .cmon{font-size:15px;font-weight:700}
+  .calnav{display:flex;gap:6px}
+  .calnav button{width:32px;height:32px;border-radius:9px;background:var(--bg);display:grid;place-items:center;color:var(--ink-2);font-size:15px}
+  .calnav button:hover{background:var(--line)}
+  .caldow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+  .caldow span{text-align:center;font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cday{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:3px;font-size:12px;font-weight:600;background:var(--bg);color:var(--ink-2);position:relative}
+  .cday.blank{background:transparent;pointer-events:none}
+  .cday.rest{background:var(--purple-soft);color:var(--purple)}
+  .cday.part{background:var(--green-tint);color:var(--green-deep)}
+  .cday.full{background:var(--green);color:#fff}
+  .cday.today{outline:2px solid var(--green);outline-offset:1px}
+  .cday.sel{outline:2px solid var(--ink);outline-offset:1px}
+  .cday.future{opacity:.45}
+  .cday .cdot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.65}
+  .callegend{display:flex;gap:14px;justify-content:center;font-size:11px;color:var(--muted);margin-top:12px;flex-wrap:wrap}
+  .callegend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .daypanel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .daypanel h4{margin:0 0 3px;font-size:14px;font-weight:800}
+  .daypanel .dsub{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+
+  
+  /* one-line rhythm nudge on Home — a pointer to the Schedule tab, not a copy of it */
+  .rhythmline{width:100%;display:flex;align-items:center;gap:10px;margin:0 0 12px;
+    padding:9px 12px;border-radius:12px;background:var(--bg);text-align:left}
+  .rhythmline:hover{background:var(--line)}
+  .rhythmline.all{background:var(--green-tint)}
+  .rhythmline .rdots{display:flex;gap:4px;flex:none}
+  .rhythmline .rdots i{width:8px;height:8px;border-radius:50%;background:var(--track)}
+  .rhythmline .rdots i.on{background:var(--green)}
+  .rhythmline .rtext{flex:1;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .rhythmline.all .rtext{color:var(--green-deep)}
+  .rhythmline .rchev{color:var(--muted);font-size:16px;flex:none}
+
   </style>
 
 <div class="app">
@@ -619,6 +672,19 @@ const PLAN_SATURDAY = [
   ["14:00","19:00","Angie's time","Afternoon and evening are hers 💛","purple","personal"],
   ["19:00","20:00","Evening wind-down","Review + gentle preparation","purple","personal"]
 ];
+// Routines with a real cadence, taken from the Rhythms list on the Life OS
+// board and the weekday shape below. Trello keeps these as prose, so they are
+// defined here rather than synced — a card like "18:30 shutdown, every working
+// day" has no machine-readable cadence to read.
+const HABITS = [
+  { id:"devotion", emoji:"\u{1F64F}", name:"Devotion",       cadence:"daily",    when:"07:00", note:"Worship, Bible, prayer \u2014 before the phone" },
+  { id:"launch",   emoji:"\u{1F305}", name:"Morning launch", cadence:"weekdays", when:"09:00", note:"Open Daybreak, pick today's three" },
+  { id:"shutdown", emoji:"\u{1F319}", name:"Shutdown",       cadence:"weekdays", when:"18:15", note:"Log wins, pick tomorrow's one thing" },
+  { id:"review",   emoji:"\u2B50",    name:"Weekly review",  cadence:"weekly", day:5, when:"17:00", note:"The one habit to keep if you keep only one" },
+  { id:"rest",     emoji:"\u26EA",    name:"Church & rest",  cadence:"weekly", day:0, note:"No laptop \u2014 this day makes the other six work" },
+  { id:"money",    emoji:"\u{1F4B0}", name:"Money hour",     cadence:"monthly", date:1, note:"First of the month" }
+];
+
 const WEEK_GLANCE = [
   ["Mon","Heaviest build day — protect it, no calls before 12. Weekly plan at 09:20."],
   ["Tue","Build + client work."],
@@ -661,6 +727,7 @@ const KEY="daybreak-v1";
 let S={done:{},history:{},unlocked:{},custom:[]};
 try{ const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
 S.custom=S.custom||[];
+S.habits=S.habits||{};
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
 const $=s=>document.querySelector(s);
@@ -799,6 +866,13 @@ function renderHome(){
 
     <div class="card">
       <div class="cardhead"><span class="eyebrow">Today's plan</span><button class="seelink" data-goview="schedule" style="color:var(--blue);font-weight:600;font-size:13px">See full schedule</button></div>
+      ${(()=>{const due=habitsOn(NOW); if(!due.length) return "";
+        const kept=due.filter(h=>habitDone(h.id,TODAY)).length;
+        const all=kept===due.length;
+        return `<button class="rhythmline ${all?"all":""}" data-goview="schedule">
+          <span class="rdots">${due.map(h=>`<i class="${habitDone(h.id,TODAY)?"on":""}"></i>`).join("")}</span>
+          <span class="rtext">${all?"Every rhythm kept today":`Rhythms \u00B7 ${kept} of ${due.length} kept`}</span>
+          <span class="rchev">\u203A</span></button>`;})()}
       <div class="plangrid">
         <div class="tl">${plan.map(b=>{
           const now=mins>=toMin(b[0])&&mins<toMin(b[1]);
@@ -981,9 +1055,18 @@ function renderSchedule(){
     <div class="card"><div class="cardhead"><span class="eyebrow">Today's plan</span></div><div class="tl">${planHTML}</div>
       ${DOW>=1&&DOW<=5?`<div class="cheer">Mornings are for people and money. Afternoons are for building — the code doesn't get to eat the morning.</div>`:""}</div>
     ${DOW===6||DOW===0?`<div class="card"><div class="cardhead"><span class="eyebrow">The weekday rhythm (Mon–Fri)</span></div><div class="tl">${wd}</div></div>`:""}
+    <div class="card"><div class="cardhead"><span class="eyebrow">Today's rhythms</span>
+        <span class="seelink" style="color:var(--muted)">${habitsOn(NOW).filter(h=>habitDone(h.id,TODAY)).length}/${habitsOn(NOW).length} kept</span></div>
+      ${habitsOn(NOW).length
+        ? habitsOn(NOW).map(h=>habitRowHTML(h,TODAY,false)).join("")
+        : `<div style="font-size:13px;color:var(--muted)">Nothing due today. Rest counts. \u{1F33F}</div>`}
+      ${habitsOn(NOW).length && habitsOn(NOW).every(h=>habitDone(h.id,TODAY))
+        ? `<div class="cheer">Every rhythm kept today. Quietly, that is the whole game.</div>` : ""}</div>
+    ${calendarHTML()}
     <div class="card"><div class="cardhead"><span class="eyebrow">The week at a glance</span></div>
       <table class="week">${WEEK_GLANCE.map(w=>`<tr><td>${w[0]}</td><td>${esc(w[1])}</td></tr>`).join("")}</table>
       <div class="cheer">⭐ Friday 17:00 — the weekly review. If you keep only one habit, keep this one.</div></div>`;
+  bindCommon(v);
 }
 
 /* ---- profile ---- */
@@ -1054,12 +1137,27 @@ function renderProfile(){
 
 /* ============ interactions ============ */
 function bindCommon(root){
-  root.querySelectorAll(".tick").forEach(b=>b.addEventListener("click",()=>toggleTask(b.dataset.task)));
-  root.querySelectorAll("[data-rec]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();toggleRecurring(b.dataset.rec);}));
-  root.querySelectorAll("[data-goview]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.goview)));
-  root.querySelectorAll("[data-goproj]").forEach(b=>b.addEventListener("click",()=>{go("projects");
-    const d=document.getElementById("proj-"+b.dataset.goproj); if(d){d.open=true;d.scrollIntoView({behavior:"smooth",block:"start"});}}));
-  root.querySelectorAll("[data-scroll]").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById(b.dataset.scroll);t&&t.scrollIntoView({behavior:"smooth",block:"start"});}));
+  // Views re-render themselves and are also swept by renderAll, so an element
+  // can be offered for binding twice. A second listener would fire the same
+  // toggle again and cancel it out, so bind each element only once. Fresh
+  // elements from a re-render carry no marker and bind normally.
+  const on = (sel, fn) => root.querySelectorAll(sel).forEach(b => {
+    if(b.dataset.bound) return;
+    b.dataset.bound = "1";
+    b.addEventListener("click", e => fn(b, e));
+  });
+
+  on(".tick", b => toggleTask(b.dataset.task));
+  on("[data-rec]", (b,e) => { e.preventDefault(); toggleRecurring(b.dataset.rec); });
+  on("[data-habit]", b => { if(!b.disabled) toggleHabit(b.dataset.habit, b.dataset.day); });
+  on("[data-day-sel]", b => { calSel = b.dataset.daySel; renderSchedule(); });
+  on("[data-cal]", b => calShift(+b.dataset.cal));
+  on("[data-goview]", b => go(b.dataset.goview));
+  on("[data-goproj]", b => { go("projects");
+    const d = document.getElementById("proj-"+b.dataset.goproj);
+    if(d){ d.open = true; d.scrollIntoView({behavior:"smooth",block:"start"}); } });
+  on("[data-scroll]", b => { const t = document.getElementById(b.dataset.scroll);
+    t && t.scrollIntoView({behavior:"smooth",block:"start"}); });
 }
 
 function toggleTask(id){
@@ -1480,6 +1578,140 @@ function installApp(){
   }
   installPrompt.prompt();
   installPrompt.userChoice.finally(() => { installPrompt = null; renderProfile(); renderCalendar(); });
+}
+
+
+// ========== ROUTINES & HABITS ==========
+
+function habitDue(h, d){
+  const w = d.getDay();
+  switch(h.cadence){
+    case "daily":    return true;
+    case "weekdays": return w>=1 && w<=5;
+    case "weekly":   return w===h.day;
+    case "monthly":  return d.getDate()===h.date;
+    default:         return false;
+  }
+}
+const habitsOn   = d => HABITS.filter(h=>habitDue(h,d));
+const habitDone  = (id,key) => !!(S.habits[id] && S.habits[id][key]);
+
+// Consecutive due-days kept, counting back from today. Today still being open
+// must not read as a broken streak, so an untouched today is skipped rather
+// than counted against.
+function habitStreak(h){
+  const d = new Date(NOW); d.setHours(12,0,0,0);
+  if(habitDue(h,d) && !habitDone(h.id, dayKey(d))) d.setDate(d.getDate()-1);
+  let n=0, guard=0;
+  while(guard++ < 400){
+    if(habitDue(h,d)){
+      if(!habitDone(h.id, dayKey(d))) break;
+      n++;
+    }
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+
+function toggleHabit(id, key){
+  const m = S.habits[id] = S.habits[id] || {};
+  const was = !!m[key];
+  if(was) delete m[key]; else m[key] = true;
+  save();
+
+  if(!was && key===TODAY){
+    const due = habitsOn(NOW);
+    if(due.length && due.every(h=>habitDone(h.id,TODAY))){
+      confetti(); toast("Every rhythm kept today. That's the whole game. \u{1F331}");
+    }
+  }
+  renderSchedule(); renderHome();
+}
+
+function habitRowHTML(h, key, locked){
+  const done = habitDone(h.id, key);
+  const st = habitStreak(h);
+  const meta = [h.when, h.note].filter(Boolean).join(" \u00B7 ");
+  return `<div class="habit ${done?"done":""}">
+    <span class="hemoji">${h.emoji}</span>
+    <div class="hbody"><div class="hname">${esc(h.name)}</div>
+      <div class="hmeta">${esc(meta)}</div></div>
+    ${st>1?`<span class="hstreak">${st}\u00D7</span>`:""}
+    <button class="hbox" ${locked?"disabled style=\"opacity:.35\"":""} data-habit="${h.id}" data-day="${key}"
+      aria-pressed="${done}" aria-label="${done?"Kept":"Mark kept"}: ${esc(h.name)}">\u2713</button>
+  </div>`;
+}
+
+// ---- routine calendar ----
+let calCursor = new Date(NOW.getFullYear(), NOW.getMonth(), 1);
+let calSel = TODAY;
+
+function calShift(n){
+  calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()+n, 1);
+  renderSchedule();
+}
+
+function planFor(d){
+  const w = d.getDay();
+  return w===0 ? null : w===6 ? PLAN_SATURDAY : PLAN_WEEKDAY;
+}
+
+function calendarHTML(){
+  const y = calCursor.getFullYear(), m = calCursor.getMonth();
+  const first = new Date(y,m,1), last = new Date(y,m+1,0);
+  const lead = (first.getDay()+6)%7;              // Monday-first
+  const label = first.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+
+  let cells = "";
+  for(let i=0;i<lead;i++) cells += `<div class="cday blank"></div>`;
+  for(let day=1; day<=last.getDate(); day++){
+    const d = new Date(y,m,day), key = dayKey(d);
+    const due = habitsOn(d);
+    const kept = due.filter(h=>habitDone(h.id,key)).length;
+    const future = key > TODAY;
+    let cls = "";
+    if(!future && due.length) cls = kept===due.length ? "full" : kept>0 ? "part" : "";
+    if(future) cls += " future";
+    if(key===TODAY) cls += " today";
+    if(key===calSel) cls += " sel";
+    const dots = (!future && due.length && kept===0)
+      ? `<span class="cdot"></span>` : "";
+    cells += `<button class="cday ${cls}" data-day-sel="${key}" aria-label="${key}, ${kept} of ${due.length} kept">${day}${dots}</button>`;
+  }
+
+  const sel = new Date(calSel + "T12:00:00");
+  const selDue = habitsOn(sel);
+  const selPlan = planFor(sel);
+  const future = calSel > TODAY;
+  const niceDay = sel.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+
+  return `<div class="card">
+    <div class="calhead">
+      <span class="cmon">${label}</span>
+      <div class="calnav">
+        <button data-cal="-1" aria-label="Previous month">\u2039</button>
+        <button data-cal="1" aria-label="Next month">\u203A</button>
+      </div>
+    </div>
+    <div class="caldow"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+    <div class="calgrid">${cells}</div>
+    <div class="callegend">
+      <span><i style="background:var(--green)"></i>all kept</span>
+      <span><i style="background:var(--green-tint)"></i>some kept</span>
+      <span><i style="background:var(--bg);border:1px solid var(--line)"></i>none yet</span>
+    </div>
+
+    <div class="daypanel">
+      <h4>${niceDay}${calSel===TODAY?" \u00B7 today":""}</h4>
+      <div class="dsub">${selPlan
+        ? `${selDue.length} rhythm${selDue.length===1?"":"s"} \u00B7 ${selPlan.length} time blocks`
+        : "Sunday \u2014 church and rest. \u{1F33F}"}</div>
+      ${selDue.length
+        ? selDue.map(h=>habitRowHTML(h, calSel, future)).join("")
+        : `<div style="font-size:13px;color:var(--muted)">Nothing scheduled. Rest counts.</div>`}
+      ${future?`<div class="cheer" style="margin-top:10px">Still ahead \u2014 you can tick this off on the day.</div>`:""}
+    </div>
+  </div>`;
 }
 
 function renderAll(){ renderHome(); renderProjects(); renderSchedule(); renderProfile(); renderCalendar();

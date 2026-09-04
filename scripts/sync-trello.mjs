@@ -63,7 +63,7 @@ function parseCardName(raw) {
   const emojiMatch = s.match(/^(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)\s*/u);
   const emoji = emojiMatch ? emojiMatch[1] : null;
   if (emojiMatch) s = s.slice(emojiMatch[0].length);
-  s = s.replace(/^\d+\s*[—–-]\s*/, '');
+  s = s.replace(/^\d+\s+[—–-]\s+/, '');
   s = s.replace(/^(NEXT UP|UP NEXT)\s*[—–-]\s*/i, '');
   s = s.split(/\s+·\s+/)[0];
   // Trailing "(28–30 Aug)" / "(starts end Sept)" duplicates the deadline the
@@ -81,6 +81,12 @@ function findCurated(key) {
     .filter(k => key.startsWith(k) || k.startsWith(key))
     .sort((a, b) => b.length - a.length)[0];
   return hit ? cfg.curated[hit] : null;
+}
+
+// Boards carry note cards ("READ ME — what parked means") that are not
+// projects. They would otherwise render as one.
+function isNoteCard(name) {
+  return (cfg.ignoreCards || []).some(pat => new RegExp(pat, 'iu').test(name));
 }
 
 function tierFor(listName) {
@@ -110,6 +116,8 @@ async function main() {
     const tier = tierFor(listName);
     if (!tier) continue; // This Week / Done / Rhythms / North Star are not projects
 
+    if (isNoteCard(card.name)) continue;
+
     const { emoji, name } = parseCardName(card.name);
     const key = slug(name);
     const curated = findCurated(key);
@@ -130,7 +138,7 @@ async function main() {
     projects.push({
       id: curated?.id || key,
       emoji: curated?.emoji || emoji || cfg.defaults.emoji,
-      name,
+      name: curated?.name || name,
       cat: tier,
       tagline: curated?.tagline || (card.desc || '').split('\n')[0].slice(0, 120) || cfg.defaults.tagline,
       stages,

@@ -849,7 +849,7 @@ function projCardHTML(p){
       <div class="ptag">${esc(p.tagline)}</div>
       ${journeyHTML(p)}
       <div class="bar"><i style="width:${pct}%"></i></div>
-      <div class="barline"><span><b>${pct}%</b> complete</span><span style="color:var(--muted)">${remL.length?`${remL.length} step${remL.length===1?"":"s"} to go`:"complete 🎉"}</span></div>
+      <div class="barline"><span><b>${pct}%</b> complete</span><span style="color:var(--muted)">${remL.length?`${remL.length} step${remL.length===1?"":"s"} to go`:(doneL.length?"complete 🎉":"no steps listed yet")}</span></div>
     </summary>
     <div class="cols">
       <div><div class="colh" style="color:var(--green-deep)">What's finished</div>

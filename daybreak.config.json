@@ -8,6 +8,14 @@
   },
   "weekListMatch": "This Week",
   "doneListMatch": "Done",
+  "ignoreCards": [
+    "read me",
+    "readme",
+    "how to",
+    "template",
+    "^—+$",
+    "(NEXT UP|UP NEXT)\\s*[—–-]"
+  ],
   "defaults": {
     "emoji": "📌",
     "stages": [
@@ -30,7 +38,8 @@
         "Festival Live",
         "Wrap-up"
       ],
-      "cheer": "Everything you prepped is live right now. Fri: Dance Night 19:00 · Sat: The Money Crusade 16:00 · Sun: The Glory of His Presence 16:00."
+      "cheer": "Everything you prepped is live right now. Fri: Dance Night 19:00 · Sat: The Money Crusade 16:00 · Sun: The Glory of His Presence 16:00.",
+      "name": "TLS Festival Weekend"
     },
     "isra-digital-money-in-the-door": {
       "id": "isra",
@@ -42,7 +51,8 @@
         "Recurring",
         "Salary"
       ],
-      "cheer": "The retainer is already agreed in principle — naming the price is the only thing between you and recurring income."
+      "cheer": "The retainer is already agreed in principle — naming the price is the only thing between you and recurring income.",
+      "name": "Isra Digital — Money in the Door"
     },
     "young-life-vision-workshop": {
       "id": "ylv",
@@ -54,7 +64,8 @@
         "Sessions",
         "Complete"
       ],
-      "cheer": "This puts you in a room teaching — which feeds everything else you're building."
+      "cheer": "This puts you in a room teaching — which feeds everything else you're building.",
+      "name": "Young Life Vision Workshop"
     },
     "clipping-business": {
       "id": "clip",
@@ -66,7 +77,8 @@
         "Sell",
         "Systemise"
       ],
-      "cheer": "Queued on purpose — it gets your full attention the moment the festival wraps."
+      "cheer": "Queued on purpose — it gets your full attention the moment the festival wraps.",
+      "name": "Clipping Business"
     },
     "church-social-media-team": {
       "id": "church",
@@ -77,7 +89,8 @@
         "Meeting",
         "Running"
       ],
-      "cheer": "The agenda is already written. You just pick a date and send it."
+      "cheer": "The agenda is already written. You just pick a date and send it.",
+      "name": "Church Social Media Team"
     },
     "isra-digital-ltd-back-office": {
       "id": "backoffice",
@@ -88,7 +101,8 @@
         "Banking",
         "Compliant"
       ],
-      "cheer": "Never zero, never more than 30 minutes. That's the whole rule."
+      "cheer": "Never zero, never more than 30 minutes. That's the whole rule.",
+      "name": "Isra Digital Ltd — Back Office"
     },
     "business-personal-money": {
       "id": "money",
@@ -99,7 +113,8 @@
         "Separated",
         "Habit"
       ],
-      "cheer": "Money arrives → move the tax share out the same day. One habit carries the rest."
+      "cheer": "Money arrives → move the tax share out the same day. One habit carries the rest.",
+      "name": "Business ≠ Personal Money"
     },
     "regal-studio": {
       "id": "regal",
@@ -111,7 +126,8 @@
         "Live",
         "Growing"
       ],
-      "cheer": "Five small steps from live. Any one of them is a good day's touch."
+      "cheer": "Five small steps from live. Any one of them is a good day's touch.",
+      "name": "Regal Studio"
     },
     "prayer-buddy": {
       "id": "prayer",
@@ -122,7 +138,8 @@
         "Migration",
         "Deployed"
       ],
-      "cheer": "You're one deploy away from calling this chapter closed."
+      "cheer": "You're one deploy away from calling this chapter closed.",
+      "name": "Prayer Buddy"
     },
     "kaptur": {
       "id": "kaptur",
@@ -133,7 +150,8 @@
         "Live",
         "Phase 2"
       ],
-      "cheer": "A live product with a real organisation on it. That already counts."
+      "cheer": "A live product with a real organisation on it. That already counts.",
+      "name": "KAPTUR"
     },
     "river-of-life-charity-website": {
       "id": "riverweb",
@@ -144,7 +162,8 @@
         "Live",
         "Handed over"
       ],
-      "cheer": "This might already be a finished project wearing a to-do's clothes."
+      "cheer": "This might already be a finished project wearing a to-do's clothes.",
+      "name": "River of Life — Charity Website"
     },
     "lbh-let-s-build-home": {
       "id": "lbh",
@@ -156,7 +175,8 @@
         "Buildable",
         "Live"
       ],
-      "cheer": "Parked is a decision, not a failure. It costs you nothing until 30 Nov."
+      "cheer": "Parked is a decision, not a failure. It costs you nothing until 30 Nov.",
+      "name": "LBH — Let's Build Home"
     },
     "dev-pool": {
       "id": "devpool",
@@ -167,7 +187,8 @@
         "Leads warm",
         "First client"
       ],
-      "cheer": "You're not short of plan. Keep the leads warm and let it wait."
+      "cheer": "You're not short of plan. Keep the leads warm and let it wait.",
+      "name": "Dev Pool"
     },
     "sammie-s-app": {
       "id": "sammie",
@@ -178,7 +199,8 @@
         "Waiting",
         "Build"
       ],
-      "cheer": "The thinking is done. It's waiting on a commitment that isn't yours to make."
+      "cheer": "The thinking is done. It's waiting on a commitment that isn't yours to make.",
+      "name": "Sammie's App"
     },
     "4-person-marketing-agency": {
       "id": "agency",
@@ -189,7 +211,8 @@
         "Parked",
         "Decided"
       ],
-      "cheer": "One clear question stands between this and a decision."
+      "cheer": "One clear question stands between this and a decision.",
+      "name": "4-Person Marketing Agency"
     },
     "northstar-ventures": {
       "id": "northstar",
@@ -200,7 +223,8 @@
         "Parked",
         "Aligned"
       ],
-      "cheer": "The next step is a conversation, not a build. It'll keep."
+      "cheer": "The next step is a conversation, not a build. It'll keep.",
+      "name": "Northstar Ventures"
     },
     "isr-trading-academy": {
       "id": "isrta",
@@ -211,7 +235,45 @@
         "Live",
         "Growing"
       ],
-      "cheer": "It doesn't need more features. It needs eyes — and that can wait for its slot."
+      "cheer": "It doesn't need more features. It needs eyes — and that can wait for its slot.",
+      "name": "ISR Trading Academy"
+    },
+    "separate-business-money-from-personal-money": {
+      "id": "money",
+      "emoji": "🏦",
+      "tagline": "Finite job — finish it once and it stays fixed",
+      "stages": [
+        "Decided",
+        "Separated",
+        "Habit"
+      ],
+      "cheer": "Money arrives → move the tax share out the same day. One habit carries the rest.",
+      "name": "Business ≠ Personal Money"
+    },
+    "lbh-blocked-not-paused": {
+      "id": "lbh",
+      "emoji": "🏠",
+      "tagline": "Blocked on one thing: a payout rail into Zimbabwe",
+      "stages": [
+        "Concept",
+        "Blocked",
+        "Buildable",
+        "Live"
+      ],
+      "cheer": "Parked is a decision, not a failure. It costs you nothing until 30 Nov.",
+      "name": "LBH — Let's Build Home"
+    },
+    "sammy-s-app": {
+      "id": "sammie",
+      "emoji": "📱",
+      "tagline": "Concept, research and brief all done",
+      "stages": [
+        "Brief done",
+        "Waiting",
+        "Build"
+      ],
+      "cheer": "The thinking is done. It's waiting on a commitment that isn't yours to make.",
+      "name": "Sammie's App"
     }
   }
 }
